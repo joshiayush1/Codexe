@@ -7,6 +7,8 @@ void InitializerRules(){
     mpp["print"] = TokenType::KEYWORD;   
     mpp["if"] = TokenType::KEYWORD;
     mpp["else"] = TokenType::KEYWORD;
+    mpp["for"] = TokenType::KEYWORD;
+    mpp["while"] = TokenType::KEYWORD;
 
     mpp["="] = TokenType::ASSIGNMENT;
 

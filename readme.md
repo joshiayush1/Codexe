@@ -2,15 +2,17 @@ Compiler using C++!
 
 Codexe -> Lexical Analysis -> Parser
 
-1. First thing to do is to define the codexe language
+
+1. Define the codexe language
 
 - We have to define rules for codexe
-We define what are the rules of our language
+We define what are the rules of codexe language
 Like int is a keyword
      age is a identifier
 
-2. Lexer
-(KEYWORD, NUMBER, IDENTIFIER, OPERATOR) is our token type.
+
+2. Lexer (Lexical Analyzer)
+(KEYWORD, NUMBER, IDENTIFIER, OPERATOR, STRING) is our token type.
 
 - We have to create tokens in order to share it to parser.
 
@@ -27,3 +29,8 @@ Rather we send (int)Keyword (age)Identifier (=)Assignment (18)Number (;) semicol
 This makes complete sense for further grammar analysis.
 
 - Token Storage
+Storing tokens in vector, for further processing
+
+
+3. Parser
+Its checks the grammar for codexe language 

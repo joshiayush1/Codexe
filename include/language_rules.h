@@ -1,6 +1,6 @@
 #include "../include/headers.h"
 
-unordered_map<string, TokenType> mpp;  //assigning stuffs to key of that token type so we directly use map for accessing
+unordered_map<string, TokenType> mpp;  //assigning key according to token type so we directly use map for accessing
 
 void InitializerRules(){
     mpp["int"] = TokenType::KEYWORD;   

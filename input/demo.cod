@@ -1,2 +1,2 @@
-int age = 23+7;
-print(age);}"Hello Ayush!!!"
+int age = 17;
+print(age);

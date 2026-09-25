@@ -1,6 +1,45 @@
-#include "../include/headers.h"
 #include "../include/lexer.h"
 #include "../include/language_rules.h"
+
+vector<Token> tokens; // creates it from lexer.h
+
+string TokenTypeToString(TokenType type)
+{
+    switch (type)
+    {
+    case TokenType::KEYWORD:
+        return "KEYWORD";
+    case TokenType::IDENTIFIER:
+        return "IDENTIFIER";
+    case TokenType::ASSIGNMENT:
+        return "ASSIGNMENT";
+    case TokenType::NUMBER:
+        return "NUMBER";
+    case TokenType::ADD_OPERATOR:
+        return "ADD_OPERATOR";
+    case TokenType::SUB_OPERATOR:
+        return "SUB_OPERATOR";
+    case TokenType::MUL_OPERATOR:
+        return "MUL_OPERATOR";
+    case TokenType::DIV_OPERATOR:
+        return "DIV_OPERATOR";
+    case TokenType::LEFT_PAREN:
+        return "LEFT_PAREN";
+    case TokenType::RIGHT_PAREN:
+        return "RIGHT_PAREN";
+    case TokenType::LEFT_BRACE:
+        return "LEFT_BRACE";
+    case TokenType::RIGHT_BRACE:
+        return "RIGHT_BRACE";
+    case TokenType::STRING:
+        return "STRING";
+    case TokenType::SEMICOLON:
+        return "SEMICOLON";
+    case TokenType::UNKNOWN:
+        return "UNKNOWN";
+    }
+    return "UNKNOWN";
+}
 
 bool isIdentifier(string word)
 {
@@ -42,7 +81,44 @@ bool isNumber(string word)
     return true;
 }
 
-int main()
+void processWord(Token token, string word, int line)
+{
+    TokenType type = getTokenType(word);
+
+    if (type == TokenType::KEYWORD)
+    {
+        // cout << "Keyword : " << word << endl;
+        token.type = type;
+        token.value = word;
+        token.line = line;
+
+        tokens.push_back(token);
+    }
+    else if (isNumber(word))
+    {
+        // cout << "Number : " << word << endl;
+        token.type = TokenType::NUMBER;
+        token.value = word;
+        token.line = line;
+
+        tokens.push_back(token);
+    }
+    else if (isIdentifier(word))
+    {
+        // cout << "Identifier : " << word << endl;
+        token.type = TokenType::IDENTIFIER;
+        token.value = word;
+        token.line = line;
+
+        tokens.push_back(token);
+    }
+    else
+    {
+        cout << "Error" << endl;
+    }
+}
+
+void tokenize()
 {
     fstream file("../input/demo.cod");
 
@@ -72,39 +148,7 @@ int main()
         {
             if (!word.empty())
             {
-                TokenType type = getTokenType(word);
-
-                if (type == TokenType::KEYWORD)
-                {
-                    // cout << "Keyword : " << word << endl;
-                    token.type = type;
-                    token.value = word;
-                    token.line = line;
-
-                    tokens.push_back(token);
-                }
-                else if (isNumber(word))
-                {
-                    // cout << "Number : " << word << endl;
-                    token.type = TokenType::NUMBER;
-                    token.value = word;
-                    token.line = line;
-
-                    tokens.push_back(token);
-                }
-                else if (isIdentifier(word))
-                {
-                    // cout << "Identifier : " << word << endl;
-                    token.type = TokenType::IDENTIFIER;
-                    token.value = word;
-                    token.line = line;
-
-                    tokens.push_back(token);
-                }
-                else
-                {
-                    cout << "Error" << endl;
-                }
+                processWord(token, word, line);
                 word = "";
             }
 
@@ -239,6 +283,12 @@ int main()
             }
         }
     }
+    if (!word.empty())
+    {
+        processWord(token, word, line);
+        word = "";
+    }
+
     // for(int i = 0; i < tokens.size(); i++){
     //     cout << "Type: " << static_cast<int>(tokens[i].type) << endl;
     //     cout << "Value: " << tokens[i].value << endl;

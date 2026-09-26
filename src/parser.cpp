@@ -14,14 +14,18 @@ void Parser::advance()
 {
     current++;
 }
+void Parser::printTokenData()
+{
+    cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
+    cout << "Value : " << tokens[current].value << endl;
+    cout << "Line : " << tokens[current].line << endl;
+}
 
 bool Parser::ParseDeclaration()
 {
     if (tokens[current].type == TokenType::KEYWORD && tokens[current].value == "int")
     {
-        cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-        cout << "Value : " << tokens[current].value << endl;
-        cout << "Line : " << tokens[current].line << endl;
+        printTokenData();
         advance();
         if (tokens[current].type != TokenType::IDENTIFIER)
         {
@@ -32,9 +36,7 @@ bool Parser::ParseDeclaration()
 
     if (tokens[current].type == TokenType::IDENTIFIER)
     {
-        cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-        cout << "Value : " << tokens[current].value << endl;
-        cout << "Line : " << tokens[current].line << endl;
+        printTokenData();
         advance();
         if (tokens[current].type != TokenType::ASSIGNMENT)
         {
@@ -45,11 +47,9 @@ bool Parser::ParseDeclaration()
 
     if (tokens[current].type == TokenType::ASSIGNMENT && tokens[current].value == "=")
     {
-        cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-        cout << "Value : " << tokens[current].value << endl;
-        cout << "Line : " << tokens[current].line << endl;
+        printTokenData();
         advance();
-        if (tokens[current].type == TokenType::NUMBER)
+        if (tokens[current].type == TokenType::NUMBER || tokens[current].type == TokenType::IDENTIFIER)
         {
             if (!ParseExpression())
             {
@@ -70,9 +70,7 @@ bool Parser::ParseDeclaration()
     }
     if (tokens[current].type == TokenType::SEMICOLON && tokens[current].value == ";")
     {
-        cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-        cout << "Value : " << tokens[current].value << endl;
-        cout << "Line : " << tokens[current].line << endl;
+        printTokenData();
         advance();
     }
     else
@@ -96,24 +94,27 @@ bool Parser::ParseExpression()
     if (tokens[current].type == TokenType::ADD_OPERATOR)
     {
         cout << "Invalid expression" << endl;
-        return 0;
+        return false;
     }
-    while (current < tokens.size() &&
-           (tokens[current].type == TokenType::NUMBER || tokens[current].type == TokenType::ADD_OPERATOR))
+    while (current < tokens.size() && (tokens[current].type == TokenType::NUMBER ||
+                                       tokens[current].type == TokenType::IDENTIFIER ||
+                                       tokens[current].type == TokenType::ADD_OPERATOR ||
+                                       tokens[current].type == TokenType::SUB_OPERATOR ||
+                                       tokens[current].type == TokenType::MUL_OPERATOR ||
+                                       tokens[current].type == TokenType::DIV_OPERATOR))
     {
-        if (count % 2 == 1 && tokens[current].type == TokenType::NUMBER)
+        if (count % 2 == 1 && (tokens[current].type == TokenType::NUMBER || tokens[current].type == TokenType::IDENTIFIER)) // operand
         {
-            cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-            cout << "Value : " << tokens[current].value << endl;
-            cout << "Line : " << tokens[current].line << endl;
+            printTokenData();
             advance();
             count++;
         }
-        else if (count % 2 == 0 && tokens[current].type == TokenType::ADD_OPERATOR)
+        else if (count % 2 == 0 && (tokens[current].type == TokenType::ADD_OPERATOR ||
+                                    tokens[current].type == TokenType::SUB_OPERATOR ||
+                                    tokens[current].type == TokenType::MUL_OPERATOR ||
+                                    tokens[current].type == TokenType::DIV_OPERATOR)) // operator
         {
-            cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-            cout << "Value : " << tokens[current].value << endl;
-            cout << "Line : " << tokens[current].line << endl;
+            printTokenData();
             advance();
             count++;
         }
@@ -127,7 +128,7 @@ bool Parser::ParseExpression()
     if (count == -1)
         return false;
     if (count % 2 == 1)
-    { // odd count means parser was expecting a NUMBER next.
+    { // odd count means parser was expecting a operand(NUMBER or IDENTFIER) next.
         cout << "Invalid expression" << endl;
         return false;
     }
@@ -139,15 +140,11 @@ bool Parser::ParsePrint()
 {
     if (tokens[current].type == TokenType::KEYWORD && tokens[current].value == "print")
     {
-        cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-        cout << "Value : " << tokens[current].value << endl;
-        cout << "Line : " << tokens[current].line << endl;
+        printTokenData();
         advance();
         if (tokens[current].type == TokenType::LEFT_PAREN)
         {
-            cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-            cout << "Value : " << tokens[current].value << endl;
-            cout << "Line : " << tokens[current].line << endl;
+            printTokenData();
             advance();
         }
         else
@@ -157,9 +154,7 @@ bool Parser::ParsePrint()
         }
         if (tokens[current].type == TokenType::IDENTIFIER)
         {
-            cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-            cout << "Value : " << tokens[current].value << endl;
-            cout << "Line : " << tokens[current].line << endl;
+            printTokenData();
             advance();
         }
         else
@@ -169,9 +164,7 @@ bool Parser::ParsePrint()
         }
         if (tokens[current].type == TokenType::RIGHT_PAREN)
         {
-            cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-            cout << "Value : " << tokens[current].value << endl;
-            cout << "Line : " << tokens[current].line << endl;
+            printTokenData();
             advance();
         }
         else
@@ -181,9 +174,7 @@ bool Parser::ParsePrint()
         }
         if (tokens[current].type == TokenType::SEMICOLON)
         {
-            cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
-            cout << "Value : " << tokens[current].value << endl;
-            cout << "Line : " << tokens[current].line << endl;
+            printTokenData();
             advance();
         }
         else
@@ -196,6 +187,55 @@ bool Parser::ParsePrint()
     return false;
 }
 
+bool Parser::ParseAssignment()
+{
+    if (tokens[current].type == TokenType::IDENTIFIER)
+    {
+        printTokenData();
+        advance();
+
+        if (tokens[current].type == TokenType::ASSIGNMENT)
+        {
+            printTokenData();
+            advance();
+        }
+        else
+        {
+            cout << "Expected '='" << endl;
+            return false;
+        }
+        if (tokens[current].type == TokenType::NUMBER || tokens[current].type == TokenType::IDENTIFIER)
+        {
+            if (!ParseExpression())
+            {
+                return false;
+            }
+        }
+        else
+        {
+            cout << "Expected an expression" << endl;
+            return false;
+        }
+        if (tokens[current].type == TokenType::SEMICOLON)
+        {
+            printTokenData();
+            advance();
+        }
+        else
+        {
+            cout << "Expected ';'" << endl;
+            return false;
+        }
+    }
+    else
+    {
+        cout << "Expected an identifier" << endl;
+        return false;
+    }
+
+    return true;
+}
+
 bool Parser::ParseStatement()
 {
     if (tokens[current].type == TokenType::KEYWORD && tokens[current].value == "int")
@@ -206,11 +246,15 @@ bool Parser::ParseStatement()
     {
         return ParsePrint();
     }
+    else if (tokens[current].type == TokenType::IDENTIFIER)
+    {
+        return ParseAssignment();
+    }
     else
     {
         cout << "Unexpected token: " << tokens[current].value << endl;
         advance();
-        return 0;
+        return false;
     }
 }
 

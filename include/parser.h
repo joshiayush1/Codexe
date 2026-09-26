@@ -5,16 +5,18 @@
 
 class Parser{
     private:
-    int current = 0;
+    int current;
 
     public:
     Parser();
     
     Token currentToken();
     void advance();
-    bool ParseDeclaration();
-    bool ParseExpression(); // Number -> Operator -> Number
-    bool ParsePrint(); // Number -> Operator -> Number
+    void printTokenData();
+    bool ParseDeclaration(); // Keyword -> Identifier -> Assignment -> Number -> Semicolon
+    bool ParseExpression(); // Number -> Operator -> Number -> Semicolon
+    bool ParsePrint(); // Left parenthesis -> Print -> Right parenthesis -> Semicolon
+    bool ParseAssignment(); // Identifier -> Assignment -> Number -> Semicolon
 
     bool ParseStatement();
     void ParseProgram();

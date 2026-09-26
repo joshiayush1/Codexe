@@ -1,2 +1,7 @@
-int age = 17;
-print(age);
+int age = 10;
+int marks = 5;
+
+age = age + marks;
+age = age - marks;
+age = age * marks;
+age = age / marks;

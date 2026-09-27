@@ -14,6 +14,31 @@ void Parser::advance()
 {
     current++;
 }
+
+bool Parser::isOperand()
+{
+    if (tokens[current].type == TokenType::NUMBER || tokens[current].type == TokenType::IDENTIFIER)
+        return true;
+
+    return false;
+}
+
+bool Parser::isAddSubOperator()
+{
+    if (tokens[current].type == TokenType::ADD_OPERATOR || tokens[current].type == TokenType::SUB_OPERATOR)
+        return true;
+
+    return false;
+}
+
+bool Parser::isMulDivOperator()
+{
+    if (tokens[current].type == TokenType::MUL_OPERATOR || tokens[current].type == TokenType::DIV_OPERATOR)
+        return true;
+
+    return false;
+}
+
 void Parser::printTokenData()
 {
     cout << "TokenType : " << TokenTypeToString(tokens[current].type) << endl;
@@ -23,7 +48,7 @@ void Parser::printTokenData()
 
 bool Parser::ParseDeclaration()
 {
-    if (tokens[current].type == TokenType::KEYWORD && tokens[current].value == "int")
+    if (tokens[current].type == TokenType::KEYWORD)
     {
         printTokenData();
         advance();
@@ -49,7 +74,7 @@ bool Parser::ParseDeclaration()
     {
         printTokenData();
         advance();
-        if (tokens[current].type == TokenType::NUMBER || tokens[current].type == TokenType::IDENTIFIER)
+        if (isOperand() || tokens[current].type == TokenType::LEFT_PAREN)
         {
             if (!ParseExpression())
             {
@@ -88,49 +113,73 @@ bool Parser::ParseDeclaration()
 // 13 +  is a not a expression
 // + 5 is not a expression
 
+
+bool Parser::ParseFactor()
+{
+    if(tokens[current].type == TokenType::LEFT_PAREN){
+        printTokenData();
+        advance();
+
+        if(!ParseExpression()){
+            return false;
+        }
+
+        if(tokens[current].type != TokenType::RIGHT_PAREN){
+            cout << "Expected ')'" << endl;
+            return false;
+        }
+        printTokenData();
+        advance();
+
+            return true;
+    }
+    
+    if (isOperand())
+    {
+        printTokenData();
+        advance();
+        return true;
+    }
+
+
+    return false;
+}
+
+bool Parser::ParseTerm()
+{
+    if (!ParseFactor())
+    {
+        return false;
+    }
+    while (isMulDivOperator())
+    {
+        printTokenData();
+        advance();
+        if (!ParseFactor())
+        {
+            cout << "Expected an expression" << endl;
+            return false;
+        }   
+    }
+
+    return true;
+}
+
 bool Parser::ParseExpression()
 {
-    int count = 1;
-    if (tokens[current].type == TokenType::ADD_OPERATOR)
+    if (!ParseTerm())
     {
-        cout << "Invalid expression" << endl;
         return false;
     }
-    while (current < tokens.size() && (tokens[current].type == TokenType::NUMBER ||
-                                       tokens[current].type == TokenType::IDENTIFIER ||
-                                       tokens[current].type == TokenType::ADD_OPERATOR ||
-                                       tokens[current].type == TokenType::SUB_OPERATOR ||
-                                       tokens[current].type == TokenType::MUL_OPERATOR ||
-                                       tokens[current].type == TokenType::DIV_OPERATOR))
+    while (isAddSubOperator())
     {
-        if (count % 2 == 1 && (tokens[current].type == TokenType::NUMBER || tokens[current].type == TokenType::IDENTIFIER)) // operand
+        printTokenData();
+        advance();
+        if (!ParseTerm())
         {
-            printTokenData();
-            advance();
-            count++;
+            cout << "Expected an expression" << endl;
+            return false;
         }
-        else if (count % 2 == 0 && (tokens[current].type == TokenType::ADD_OPERATOR ||
-                                    tokens[current].type == TokenType::SUB_OPERATOR ||
-                                    tokens[current].type == TokenType::MUL_OPERATOR ||
-                                    tokens[current].type == TokenType::DIV_OPERATOR)) // operator
-        {
-            printTokenData();
-            advance();
-            count++;
-        }
-        else
-        {
-            cout << "Invalid expression" << endl;
-            count = -1;
-            break;
-        }
-    }
-    if (count == -1)
-        return false;
-    if (count % 2 == 1)
-    { // odd count means parser was expecting a operand(NUMBER or IDENTFIER) next.
-        cout << "Invalid expression" << endl;
-        return false;
     }
 
     return true;
@@ -142,7 +191,7 @@ bool Parser::ParsePrint()
     {
         printTokenData();
         advance();
-        if (tokens[current].type == TokenType::LEFT_PAREN)
+        if (tokens[current].type == TokenType::LEFT_PAREN)  
         {
             printTokenData();
             advance();
@@ -204,7 +253,7 @@ bool Parser::ParseAssignment()
             cout << "Expected '='" << endl;
             return false;
         }
-        if (tokens[current].type == TokenType::NUMBER || tokens[current].type == TokenType::IDENTIFIER)
+        if (isOperand() || tokens[current].type == TokenType::LEFT_PAREN)
         {
             if (!ParseExpression())
             {

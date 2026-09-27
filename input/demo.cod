@@ -1,7 +1,1 @@
-int age = 10;
-int marks = 5;
-
-age = age + marks;
-age = age - marks;
-age = age * marks;
-age = age / marks;
+int age = 5 + 2 * (3 + (4 * 2));

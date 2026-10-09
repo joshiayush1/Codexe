@@ -34,4 +34,9 @@ Storing tokens in vector, for further processing
 
 3. Parser
 Its checks the grammar for codexe language 
-Grammar as in ()
+Grammar as in (Declrataion, Expression, etc)
+
+It checks for the tokens that should be in proper manner, otherwise throws error.
+
+- AST(Abstract Syntax tree)
+-Why AST?

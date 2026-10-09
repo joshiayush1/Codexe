@@ -2,6 +2,7 @@
 
 #include "../include/headers.h"
 #include "../include/lexer.h"
+#include "../include/ast.h"
 
 class Parser{
     private:
@@ -13,14 +14,15 @@ class Parser{
     Token currentToken();
     void advance();
     void printTokenData();
+    void printNodeData(ASTNode *node);
     bool isOperand();
     bool isAddSubOperator();
     bool isMulDivOperator();
 
     bool ParseDeclaration(); // Keyword -> Identifier -> Assignment -> Expression -> Semicolon
-    bool ParseFactor(); // Operand or Parenthesis
-    bool ParseTerm(); // Factor -> * or / -> Factor
-    bool ParseExpression(); // Term -> + or - -> Term
+    ASTNode *ParseFactor(); // Operand or Parenthesis
+    ASTNode *ParseTerm(); // Factor -> * or / -> Factor
+    ASTNode *ParseExpression(); // Term -> + or - -> Term
     bool ParsePrint(); // Print -> Left parenthesis -> Identifier -> Right parenthesis -> Semicolon
     bool ParseAssignment(); // Identifier -> Assignment -> Number -> Semicolon
 

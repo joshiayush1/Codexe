@@ -46,11 +46,23 @@ void Parser::printTokenData()
     cout << "Line : " << tokens[current].line << endl;
 }
 
+void Parser::printNodeData(ASTNode *node)
+{
+    if(node == nullptr){
+        return;
+    }
+
+    cout << "Node - " << node -> data << endl;
+
+    printNodeData(node -> left);
+    printNodeData(node -> right);
+}
+
 bool Parser::ParseDeclaration()
 {
     if (tokens[current].type == TokenType::KEYWORD)
     {
-        printTokenData();
+        // printTokenData();
         advance();
         if (tokens[current].type != TokenType::IDENTIFIER)
         {
@@ -61,7 +73,7 @@ bool Parser::ParseDeclaration()
 
     if (tokens[current].type == TokenType::IDENTIFIER)
     {
-        printTokenData();
+        // printTokenData();
         advance();
         if (tokens[current].type != TokenType::ASSIGNMENT)
         {
@@ -72,20 +84,18 @@ bool Parser::ParseDeclaration()
 
     if (tokens[current].type == TokenType::ASSIGNMENT && tokens[current].value == "=")
     {
-        printTokenData();
+        // printTokenData();
         advance();
-        if (isOperand() || tokens[current].type == TokenType::LEFT_PAREN)
-        {
-            if (!ParseExpression())
-            {
-                return false;
-            }
-        }
-        else
+        ASTNode *root = ParseExpression();
+
+        if (root == nullptr)
         {
             cout << "Expected a valid expression" << endl;
             return false;
         }
+
+        cout << "\nExpression AST:" << endl;
+        printNodeData(root);
     }
 
     if (current >= tokens.size())
@@ -95,7 +105,7 @@ bool Parser::ParseDeclaration()
     }
     if (tokens[current].type == TokenType::SEMICOLON && tokens[current].value == ";")
     {
-        printTokenData();
+        // printTokenData();
         advance();
     }
     else
@@ -114,86 +124,122 @@ bool Parser::ParseDeclaration()
 // + 5 is not a expression
 
 
-bool Parser::ParseFactor()
+ASTNode *Parser::ParseFactor()
 {
     if(tokens[current].type == TokenType::LEFT_PAREN){
-        printTokenData();
+        // printTokenData();
         advance();
+        
+        ASTNode* node = ParseExpression();
 
-        if(!ParseExpression()){
-            return false;
+        if (node == nullptr)
+        {
+            return nullptr;
         }
-
+        
         if(tokens[current].type != TokenType::RIGHT_PAREN){
             cout << "Expected ')'" << endl;
-            return false;
+            return nullptr;
         }
-        printTokenData();
-        advance();
 
-            return true;
+        advance();
+        return node;
+    }
+    if (!isOperand())
+    {
+        return nullptr;
+    }
+    ASTNode *operandNode;
+    if(tokens[current].type == TokenType::NUMBER){
+        operandNode = new ASTNode(tokens[current].value, ASTType::NUMBER);
+    }
+    else if(tokens[current].type == TokenType::IDENTIFIER){
+        operandNode = new ASTNode(tokens[current].value, ASTType::IDENTIFIER);
+    }
+    // printTokenData();
+    advance();
+
+
+    return operandNode;
+}
+
+ASTNode *Parser::ParseTerm()
+{
+    ASTNode *leftOperand = ParseFactor();
+    if (leftOperand == nullptr)
+    {
+        return nullptr;
     }
     
-    if (isOperand())
-    {
-        printTokenData();
-        advance();
-        return true;
-    }
-
-
-    return false;
-}
-
-bool Parser::ParseTerm()
-{
-    if (!ParseFactor())
-    {
-        return false;
-    }
     while (isMulDivOperator())
     {
-        printTokenData();
+        ASTNode *operatorNode;
+        if(tokens[current].type == TokenType::MUL_OPERATOR){
+            operatorNode = new ASTNode(tokens[current].value, ASTType::MUL_OPERATOR);
+        }
+        else if(tokens[current].type == TokenType::DIV_OPERATOR){
+            operatorNode = new ASTNode(tokens[current].value, ASTType::DIV_OPERATOR);
+        }
+        // printTokenData();
         advance();
-        if (!ParseFactor())
+        ASTNode *rightOperand = ParseFactor();
+        if(rightOperand == nullptr)
         {
             cout << "Expected an expression" << endl;
-            return false;
+            return nullptr;
         }   
+        operatorNode -> left = leftOperand;
+        operatorNode -> right = rightOperand;
+        leftOperand = operatorNode;
+
     }
 
-    return true;
+    return leftOperand; // point to entire subtree
 }
 
-bool Parser::ParseExpression()
+ASTNode *Parser::ParseExpression()
 {
-    if (!ParseTerm())
-    {
-        return false;
+    ASTNode *leftOperand = ParseTerm();
+    if(leftOperand == nullptr){
+        return nullptr;
     }
     while (isAddSubOperator())
     {
-        printTokenData();
+        ASTNode *operatorNode;
+        if(tokens[current].type == TokenType::ADD_OPERATOR){
+            operatorNode = new ASTNode(tokens[current].value, ASTType::ADD_OPERATOR);
+        }
+        else if(tokens[current].type == TokenType::SUB_OPERATOR){
+            operatorNode = new ASTNode(tokens[current].value, ASTType::SUB_OPERATOR);
+        }
+        // printTokenData();
         advance();
-        if (!ParseTerm())
+
+        ASTNode *rightOperand = ParseTerm();
+        if (rightOperand == nullptr)
         {
             cout << "Expected an expression" << endl;
-            return false;
+            delete leftOperand;
+            delete operatorNode;
+            return nullptr;
         }
+        operatorNode -> left = leftOperand;
+        operatorNode -> right = rightOperand;
+        leftOperand = operatorNode;
     }
 
-    return true;
+    return leftOperand;
 }
 
 bool Parser::ParsePrint()
 {
     if (tokens[current].type == TokenType::KEYWORD && tokens[current].value == "print")
     {
-        printTokenData();
+        // printTokenData();
         advance();
         if (tokens[current].type == TokenType::LEFT_PAREN)  
         {
-            printTokenData();
+            // printTokenData();
             advance();
         }
         else
@@ -203,7 +249,7 @@ bool Parser::ParsePrint()
         }
         if (tokens[current].type == TokenType::IDENTIFIER)
         {
-            printTokenData();
+            // printTokenData();
             advance();
         }
         else
@@ -213,7 +259,7 @@ bool Parser::ParsePrint()
         }
         if (tokens[current].type == TokenType::RIGHT_PAREN)
         {
-            printTokenData();
+            // printTokenData();
             advance();
         }
         else
@@ -223,7 +269,7 @@ bool Parser::ParsePrint()
         }
         if (tokens[current].type == TokenType::SEMICOLON)
         {
-            printTokenData();
+            // printTokenData();
             advance();
         }
         else
@@ -240,12 +286,12 @@ bool Parser::ParseAssignment()
 {
     if (tokens[current].type == TokenType::IDENTIFIER)
     {
-        printTokenData();
+        // printTokenData();
         advance();
 
         if (tokens[current].type == TokenType::ASSIGNMENT)
         {
-            printTokenData();
+            // printTokenData();
             advance();
         }
         else
@@ -255,10 +301,15 @@ bool Parser::ParseAssignment()
         }
         if (isOperand() || tokens[current].type == TokenType::LEFT_PAREN)
         {
-            if (!ParseExpression())
+            ASTNode* root = ParseExpression();
+
+            if (root == nullptr)
             {
+                cout << "Expected an expression" << endl;
                 return false;
             }
+
+            printNodeData(root);
         }
         else
         {
@@ -267,7 +318,7 @@ bool Parser::ParseAssignment()
         }
         if (tokens[current].type == TokenType::SEMICOLON)
         {
-            printTokenData();
+            // printTokenData();
             advance();
         }
         else

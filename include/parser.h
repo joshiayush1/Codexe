@@ -15,6 +15,7 @@ class Parser{
     void advance();
     void printTokenData();
     void printNodeData(ASTNode *node);
+    void deleteNode(ASTNode *node);
     bool isOperand();
     bool isAddSubOperator();
     bool isMulDivOperator();

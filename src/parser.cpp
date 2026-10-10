@@ -58,6 +58,18 @@ void Parser::printNodeData(ASTNode *node)
     printNodeData(node -> right);
 }
 
+void Parser::deleteNode(ASTNode *node)
+{
+    if(node == nullptr){
+        return;
+    }
+
+    deleteNode(node -> left);
+    deleteNode(node -> right);
+
+    delete(node);
+}
+
 bool Parser::ParseDeclaration()
 {
     if (tokens[current].type == TokenType::KEYWORD)
@@ -90,12 +102,13 @@ bool Parser::ParseDeclaration()
 
         if (root == nullptr)
         {
-            cout << "Expected a valid expression" << endl;
+            // cout << "Expected a valid expression" << endl;
             return false;
         }
 
-        cout << "\nExpression AST:" << endl;
+        cout << "Expression AST:" << endl;
         printNodeData(root);
+        deleteNode(root);
     }
 
     if (current >= tokens.size())
@@ -126,6 +139,10 @@ bool Parser::ParseDeclaration()
 
 ASTNode *Parser::ParseFactor()
 {
+    if (current >= tokens.size())
+    {
+        return nullptr;
+    }
     if(tokens[current].type == TokenType::LEFT_PAREN){
         // printTokenData();
         advance();
@@ -137,7 +154,7 @@ ASTNode *Parser::ParseFactor()
             return nullptr;
         }
         
-        if(tokens[current].type != TokenType::RIGHT_PAREN){
+        if(current >= tokens.size() || tokens[current].type != TokenType::RIGHT_PAREN){
             cout << "Expected ')'" << endl;
             return nullptr;
         }
@@ -186,8 +203,10 @@ ASTNode *Parser::ParseTerm()
         if(rightOperand == nullptr)
         {
             cout << "Expected an expression" << endl;
+            deleteNode(leftOperand);
+            delete operatorNode;
             return nullptr;
-        }   
+        }  
         operatorNode -> left = leftOperand;
         operatorNode -> right = rightOperand;
         leftOperand = operatorNode;
@@ -219,7 +238,7 @@ ASTNode *Parser::ParseExpression()
         if (rightOperand == nullptr)
         {
             cout << "Expected an expression" << endl;
-            delete leftOperand;
+            deleteNode(leftOperand);
             delete operatorNode;
             return nullptr;
         }
@@ -310,6 +329,7 @@ bool Parser::ParseAssignment()
             }
 
             printNodeData(root);
+            deleteNode(root);
         }
         else
         {

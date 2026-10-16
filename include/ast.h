@@ -2,6 +2,8 @@
 #include "headers.h"
 
 enum class ASTType{
+    DECLARATION,
+    PRINT,
     IDENTIFIER,
     ASSIGNMENT,
     NUMBER,
@@ -9,9 +11,6 @@ enum class ASTType{
     SUB_OPERATOR,
     MUL_OPERATOR,
     DIV_OPERATOR,
-    LEFT_PAREN,
-    RIGHT_PAREN,
-    SEMICOLON,
     UNKNOWN,
 };
 

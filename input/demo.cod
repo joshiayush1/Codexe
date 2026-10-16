@@ -1,1 +1,3 @@
-int age = 5 +;
+int age;
+age = 17 + 3;
+print(5+9);

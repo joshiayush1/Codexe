@@ -15,6 +15,7 @@
 #include "../include/headers.h"
 #include "../include/parser.h"
 #include "../include/ast.h"
+#include "../include/symbol_table.h"
 
 int main()
 {
@@ -22,6 +23,8 @@ int main()
 
     Parser parser;
     parser.ParseProgram();
+    SymbolTable st;
+    st.addSymbols();
 
     return 0;
 }

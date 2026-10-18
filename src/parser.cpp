@@ -91,7 +91,7 @@ bool Parser::ParseDeclaration()
     if (current >= tokens.size() ||
         tokens[current].type != TokenType::IDENTIFIER)
     {
-        cout << "Expected an identifier" << endl;
+        cout << "Error: Expected an identifier" << endl;
         deleteNode(declarationNode);
         return false;
     }
@@ -118,7 +118,7 @@ bool Parser::ParseDeclaration()
         tokens[current].type != TokenType::ASSIGNMENT ||
         tokens[current].value != "=")
     {
-        cout << "Expected '='" << endl;
+        cout << "Error: Expected '='" << endl;
         deleteNode(declarationNode);
         return false;
     }
@@ -127,7 +127,7 @@ bool Parser::ParseDeclaration()
 
     if (current >= tokens.size())
     {
-        cout << "Expected an expression" << endl;
+        cout << "Error: Expected an expression" << endl;
         deleteNode(declarationNode);
         return false;
     }
@@ -136,7 +136,7 @@ bool Parser::ParseDeclaration()
 
     if (expressionNode == nullptr)
     {
-        cout << "Expected an expression" << endl;
+        cout << "Error: Expected an expression" << endl;
         deleteNode(declarationNode);
         return false;
     }
@@ -146,7 +146,7 @@ bool Parser::ParseDeclaration()
     if (current >= tokens.size() ||
         tokens[current].type != TokenType::SEMICOLON)
     {
-        cout << "Expected ';'" << endl;
+        cout << "Error: Expected ';'" << endl;
         deleteNode(declarationNode);
         return false;
     }
@@ -187,7 +187,7 @@ ASTNode *Parser::ParseFactor()
 
         if (current >= tokens.size() || tokens[current].type != TokenType::RIGHT_PAREN)
         {
-            cout << "Expected ')'" << endl;
+            cout << "Error: Expected ')'" << endl;
             deleteNode(node);
             return nullptr;
         }
@@ -238,7 +238,7 @@ ASTNode *Parser::ParseTerm()
         ASTNode *rightOperand = ParseFactor();
         if (rightOperand == nullptr)
         {
-            cout << "Expected an expression" << endl;
+            cout << "Error: Expected an expression" << endl;
             deleteNode(leftOperand);
             delete operatorNode;
             return nullptr;
@@ -302,7 +302,7 @@ bool Parser::ParsePrint()
         }
         else
         {
-            cout << "Expected a '(" << endl;
+            cout << "Error: Expected '(" << endl;
             delete (printNode);
             return false;
         }
@@ -310,7 +310,7 @@ bool Parser::ParsePrint()
 
         if (expressionNode == nullptr)
         {
-            cout << "Expected an expression" << endl;
+            cout << "Error: Expected an expression" << endl;
             deleteNode(printNode);
             return false;
         }
@@ -323,7 +323,7 @@ bool Parser::ParsePrint()
         }
         else
         {
-            cout << "Expected a ')' " << endl;
+            cout << "Error: Expected ')' " << endl;
             deleteNode(printNode);
             return false;
         }
@@ -340,7 +340,7 @@ bool Parser::ParsePrint()
         }
         else
         {
-            cout << "Expected a ';' " << endl;
+            cout << "Error: Expected a ';' " << endl;
             deleteNode(printNode);
             return false;
         }
@@ -368,13 +368,13 @@ bool Parser::ParseAssignment()
         else
         {
             delete(identifierNode);
-            cout << "Expected '='" << endl;
+            cout << "Error: Expected '='" << endl;
             return false;
         }
         if (current >= tokens.size() ||
         (!isOperand() && tokens[current].type != TokenType::LEFT_PAREN))
         {
-            cout << "Expected an expression" << endl;
+            cout << "Error: Expected an expression" << endl;
             delete(identifierNode);
             delete(assignmentNode);
             return false;
@@ -383,7 +383,7 @@ bool Parser::ParseAssignment()
 
         if (expressionNode == nullptr)
         {
-            cout << "Expected an expression" << endl;
+            cout << "Error: Expected an expression" << endl;
             deleteNode(identifierNode);
             deleteNode(assignmentNode);
             return false;
@@ -402,14 +402,14 @@ bool Parser::ParseAssignment()
         }
         else
         {
-            cout << "Expected ';'" << endl;
+            cout << "Error: Expected ';'" << endl;
             deleteNode(assignmentNode);
             return false;
         }
     }
     else
     {
-        cout << "Expected an identifier" << endl;
+        cout << "Error: Expected an identifier" << endl;
         return false;
     }
 
@@ -418,6 +418,10 @@ bool Parser::ParseAssignment()
 
 bool Parser::ParseStatement()
 {
+    if (current >= tokens.size())
+    {
+        return false;
+    }
     if (tokens[current].type == TokenType::KEYWORD && tokens[current].value == "int")
     {
         return ParseDeclaration();
@@ -432,10 +436,13 @@ bool Parser::ParseStatement()
     }
     else
     {
-        cout << "Unexpected token: " << tokens[current].value << endl;
-        advance();
-        return false;
+        if(current < tokens.size()){
+            cout << "Error at line " << tokens[current].line << ": Unexpected token: " << tokens[current].value << endl;
+            advance();
+            return false;
+        }
     }
+    return false;
 }
 
 void Parser::ParseProgram()

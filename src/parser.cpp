@@ -1,4 +1,5 @@
 #include "../include/parser.h"
+#include "../include/symbol_table.h"
 
 Parser::Parser()
 {
@@ -74,6 +75,7 @@ void Parser::deleteNode(ASTNode *node)
 
     delete (node);
 }
+SymbolTable st = SymbolTable();
 
 bool Parser::ParseDeclaration()
 {
@@ -82,30 +84,39 @@ bool Parser::ParseDeclaration()
     {
         return false;
     }
-
     ASTNode *declarationNode =
-        new ASTNode(tokens[current].value, ASTType::DECLARATION);
-
+    new ASTNode(tokens[current].value, ASTType::DECLARATION);
+    string currType = tokens[current].value;
+    // cout<<currType<<endl;
     advance();
-
+    
     if (current >= tokens.size() ||
-        tokens[current].type != TokenType::IDENTIFIER)
+    tokens[current].type != TokenType::IDENTIFIER)
     {
         cout << "Error: Expected an identifier" << endl;
         deleteNode(declarationNode);
         return false;
     }
+    
+    string currName = tokens[current].value;
+    if(st.isPresent(currName)){
+       cout << "Error: Redeclarataion of '" << currName << "'" << endl;
+       deleteNode(declarationNode);
+       return false;
+    }
 
     ASTNode *identifierNode =
-        new ASTNode(tokens[current].value, ASTType::IDENTIFIER);
-
+    new ASTNode(tokens[current].value, ASTType::IDENTIFIER);
     declarationNode->left = identifierNode;
-
+    
     advance();
-
+    
     if (current < tokens.size() &&
-        tokens[current].type == TokenType::SEMICOLON)
+    tokens[current].type == TokenType::SEMICOLON)
     {
+        st.addSymbol(currName, currType);
+        st.printSymbolType(currName);
+        
         cout << "Declaration AST:" << endl;
         printNodeData(declarationNode);
 
@@ -150,7 +161,7 @@ bool Parser::ParseDeclaration()
         deleteNode(declarationNode);
         return false;
     }
-
+    
     cout << "Declaration AST:" << endl;
     printNodeData(declarationNode);
 
@@ -198,6 +209,13 @@ ASTNode *Parser::ParseFactor()
     if (!isOperand())
     {
         return nullptr;
+    }
+    if(tokens[current].type == TokenType::IDENTIFIER){
+        string currName = tokens[current].value;
+        if(!st.isPresent(currName)){
+            cout << "Error: Variable '" << currName << "' is not declared" << endl;
+            return nullptr;
+        }
     }
     ASTNode *operandNode;
     if (tokens[current].type == TokenType::NUMBER)
@@ -355,6 +373,13 @@ bool Parser::ParseAssignment()
     ASTNode *assignmentNode;
     if (tokens[current].type == TokenType::IDENTIFIER)
     {
+        string currName = tokens[current].value;
+        if(!st.isPresent(currName)){
+            cout << "Error: Variable '" << currName << "' is not declared" << endl;
+            return false;
+        }
+        st.printSymbolType(currName);
+
         identifierNode = new ASTNode(tokens[current].value, ASTType::IDENTIFIER);
         // printTokenData();
         advance();

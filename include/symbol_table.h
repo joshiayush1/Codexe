@@ -1,4 +1,3 @@
-#include "../include/headers.h"
 #include "../include/lexer.h"
 
 class SymbolTable{
@@ -6,5 +5,7 @@ class SymbolTable{
     unordered_map<string, string> symbolMap;
 
     public:
-    void addSymbols(string name, string type);
+    void addSymbol(string name, string type);
+    void printSymbolType(string name);
+    bool isPresent(string name);
 };

@@ -1,3 +1,4 @@
-int
-age = 17;
+int ages;
+int age;
+ages = age + 17;
 print(5+6);

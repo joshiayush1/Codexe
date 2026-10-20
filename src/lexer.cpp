@@ -191,6 +191,61 @@ void tokenize()
 
                 tokens.push_back(token);
             }
+            else if (symbolType == TokenType::GREATER_EQUAL)
+            {
+                // cout << "ASSIGNMENT : " << ch << endl;
+                token.type = symbolType;
+                token.value = ch;
+                token.line = line;
+
+                tokens.push_back(token);
+            }
+            else if (symbolType == TokenType::LESS_THAN)
+            {
+                // cout << "ASSIGNMENT : " << ch << endl;
+                token.type = symbolType;
+                token.value = ch;
+                token.line = line;
+
+                tokens.push_back(token);
+            }
+            else if (symbolType == TokenType::GREATER_EQUAL)
+            {
+                // cout << "ASSIGNMENT : " << ch << endl;
+                token.type = symbolType;
+                token.value = ch;
+                token.line = line;
+
+                tokens.push_back(token);
+            }
+            else if (symbolType == TokenType::LESS_EQUAL)
+            {
+                // cout << "ASSIGNMENT : " << ch << endl;
+                token.type = symbolType;
+                token.value = ch;
+                token.line = line;
+
+                tokens.push_back(token);
+            }
+            else if (symbolType == TokenType::EQUAL_EQUAL)
+            {
+                // cout << "ASSIGNMENT : " << ch << endl;
+                token.type = symbolType;
+                token.value = ch;
+                token.line = line;
+
+                tokens.push_back(token);
+            }
+            else if (symbolType == TokenType::NOT_EQUAL)
+            {
+                // cout << "ASSIGNMENT : " << ch << endl;
+                token.type = symbolType;
+                token.value = ch;
+                token.line = line;
+
+                tokens.push_back(token);
+            }
+            
             else if (symbolType == TokenType::ADD_OPERATOR)
             {
                 // cout << "ADD_OPERATOR : " << ch << endl;

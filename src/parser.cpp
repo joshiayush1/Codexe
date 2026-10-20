@@ -1,5 +1,5 @@
 #include "../include/parser.h"
-#include "../include/symbol_table.h"
+#include "../include/semantic.h"
 
 Parser::Parser()
 {
@@ -22,7 +22,8 @@ bool Parser::isOperand()
         return false;
 
     return tokens[current].type == TokenType::NUMBER ||
-           tokens[current].type == TokenType::IDENTIFIER;
+        tokens[current].type == TokenType::IDENTIFIER ||
+        tokens[current].type == TokenType::STRING;
 }
 
 bool Parser::isAddSubOperator()
@@ -76,6 +77,7 @@ void Parser::deleteNode(ASTNode *node)
     delete (node);
 }
 SymbolTable st = SymbolTable();
+Semantic sem = Semantic();
 
 bool Parser::ParseDeclaration()
 {
@@ -99,8 +101,7 @@ bool Parser::ParseDeclaration()
     }
     
     string currName = tokens[current].value;
-    if(st.isPresent(currName)){
-       cout << "Error: Redeclarataion of '" << currName << "'" << endl;
+    if(sem.reDeclaration(currName, st)){
        deleteNode(declarationNode);
        return false;
     }
@@ -153,7 +154,14 @@ bool Parser::ParseDeclaration()
     }
 
     declarationNode->right = expressionNode;
-
+    string expressionType = sem.getExpressionType(expressionNode, st);
+    if (expressionType != currType)
+    {
+        cout << "Error: Type mismatch in declaration of '"
+            << currName << "'" << endl;
+        deleteNode(declarationNode);
+        return false;
+    }
     if (current >= tokens.size() ||
         tokens[current].type != TokenType::SEMICOLON)
     {
@@ -161,6 +169,8 @@ bool Parser::ParseDeclaration()
         deleteNode(declarationNode);
         return false;
     }
+    st.addSymbol(currName, currType);
+    st.printSymbolType(currName);
     
     cout << "Declaration AST:" << endl;
     printNodeData(declarationNode);
@@ -212,8 +222,7 @@ ASTNode *Parser::ParseFactor()
     }
     if(tokens[current].type == TokenType::IDENTIFIER){
         string currName = tokens[current].value;
-        if(!st.isPresent(currName)){
-            cout << "Error: Variable '" << currName << "' is not declared" << endl;
+        if(!sem.checkVariable(currName, st)){
             return nullptr;
         }
     }
@@ -221,6 +230,10 @@ ASTNode *Parser::ParseFactor()
     if (tokens[current].type == TokenType::NUMBER)
     {
         operandNode = new ASTNode(tokens[current].value, ASTType::NUMBER);
+    }
+    else if (tokens[current].type == TokenType::STRING)
+    {
+        operandNode = new ASTNode(tokens[current].value, ASTType::STRING);
     }
     else if (tokens[current].type == TokenType::IDENTIFIER)
     {
@@ -374,20 +387,18 @@ bool Parser::ParseAssignment()
     if (tokens[current].type == TokenType::IDENTIFIER)
     {
         string currName = tokens[current].value;
-        if(!st.isPresent(currName)){
-            cout << "Error: Variable '" << currName << "' is not declared" << endl;
+        if(!sem.checkVariable(currName, st)){
             return false;
         }
-        st.printSymbolType(currName);
+        string variableType = st.getSymbolType(currName);
 
         identifierNode = new ASTNode(tokens[current].value, ASTType::IDENTIFIER);
-        // printTokenData();
+        
         advance();
         
         if (current < tokens.size() && tokens[current].type == TokenType::ASSIGNMENT)
         {
             assignmentNode = new ASTNode(tokens[current].value, ASTType::ASSIGNMENT);
-            // printTokenData();
             advance();
         }
         else
@@ -405,15 +416,21 @@ bool Parser::ParseAssignment()
             return false;
         }
         ASTNode *expressionNode = ParseExpression();
-
-        if (expressionNode == nullptr)
+        if(expressionNode == nullptr)
         {
             cout << "Error: Expected an expression" << endl;
             deleteNode(identifierNode);
             deleteNode(assignmentNode);
             return false;
         }
-
+        string expressionType = sem.getExpressionType(expressionNode, st);
+        if(expressionType != variableType){
+            cout << "Type mismatch in assigment to '" << currName << "'" << endl;
+            delete(identifierNode);
+            delete(expressionNode);
+            delete(assignmentNode);
+            return false;
+        }
         assignmentNode->left = identifierNode;
         assignmentNode->right = expressionNode;
 
@@ -447,7 +464,8 @@ bool Parser::ParseStatement()
     {
         return false;
     }
-    if (tokens[current].type == TokenType::KEYWORD && tokens[current].value == "int")
+    if (tokens[current].type == TokenType::KEYWORD && 
+        (tokens[current].value == "int" || tokens[current].value == "string"))
     {
         return ParseDeclaration();
     }

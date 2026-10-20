@@ -14,7 +14,6 @@
 
 #include "../include/headers.h"
 #include "../include/parser.h"
-#include "../include/ast.h"
 
 int main()
 {

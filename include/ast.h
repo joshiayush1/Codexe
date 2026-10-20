@@ -1,9 +1,11 @@
 #pragma once
+
 #include "headers.h"
 
 enum class ASTType{
     DECLARATION,
     PRINT,
+    STRING,
     IDENTIFIER,
     ASSIGNMENT,
     NUMBER,

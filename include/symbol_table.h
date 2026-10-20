@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../include/lexer.h"
 
 class SymbolTable{
@@ -8,4 +10,5 @@ class SymbolTable{
     void addSymbol(string name, string type);
     void printSymbolType(string name);
     bool isPresent(string name);
+    string getSymbolType(string name);
 };

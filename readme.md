@@ -71,6 +71,23 @@ The tree preserves the order of operations: first (4-1=3), then (9*3=27), and fi
 
 4. Semantic Analysis
 
+- Symbol Table
+Symbol table datastructure stores the information about identifiers.
+
+- Why do we need symbol table?
+. It tells us if the variable was created previously
+. It stores new variables and their type
+
+- Semantic Analysis
+Semantic Analysis checks meaning of the program.
+This makes sure that the code is not only syntactically correct but also meaningful.
+
+
+
+
+
+
+
 
 
 

@@ -5,17 +5,31 @@
 enum class TokenType{
     KEYWORD,
     IDENTIFIER,
-    ASSIGNMENT,
+    STRING,
     NUMBER,
+    
+    IF,
+    ELSE,
+    
+    ASSIGNMENT,
+    GREATER_THAN,
+    LESS_THAN,
+    GREATER_EQUAL,
+    LESS_EQUAL,
+    EQUAL_EQUAL,
+    NOT_EQUAL,
+    
     ADD_OPERATOR,
     SUB_OPERATOR,
     MUL_OPERATOR,
     DIV_OPERATOR,
+    
+    
     LEFT_PAREN,
     RIGHT_PAREN,
     LEFT_BRACE,
     RIGHT_BRACE,
-    STRING,
+    
     SEMICOLON,
     UNKNOWN,
 };

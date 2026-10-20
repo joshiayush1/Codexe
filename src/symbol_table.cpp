@@ -1,8 +1,15 @@
 #include "../include/symbol_table.h"
 
-
 void SymbolTable::addSymbol(string name, string type){
     symbolMap[name] = type;
+}
+
+string SymbolTable::getSymbolType(string name){
+    auto it = symbolMap.find(name);
+    if(it != symbolMap.end()){
+        return it->second;
+    }
+    return "";
 }
 
 void SymbolTable::printSymbolType(string name){

@@ -8,8 +8,8 @@ void InitializerRules(){
     mpp["int"] = TokenType::KEYWORD;   
     mpp["string"] = TokenType::KEYWORD;   
     mpp["print"] = TokenType::KEYWORD;   
-    mpp["if"] = TokenType::KEYWORD;
-    mpp["else"] = TokenType::KEYWORD;
+    mpp["if"] = TokenType::IF;
+    mpp["else"] = TokenType::ELSE;
 
     mpp["="] = TokenType::ASSIGNMENT;
 

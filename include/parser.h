@@ -19,14 +19,16 @@ class Parser{
     bool isOperand();
     bool isAddSubOperator();
     bool isMulDivOperator();
+    bool isComparisonOperator();
 
-    bool ParseDeclaration(); // Keyword -> Identifier -> Assignment -> Expression -> Semicolon
+    ASTNode *ParseDeclaration(); // Keyword -> Identifier -> Assignment -> Expression -> Semicolon
     ASTNode *ParseFactor(); // Operand or Parenthesis
     ASTNode *ParseTerm(); // Factor -> * or / -> Factor
     ASTNode *ParseExpression(); // Term -> + or - -> Term
-    bool ParsePrint(); // Print -> Left parenthesis -> Identifier -> Right parenthesis -> Semicolon
-    bool ParseAssignment(); // Identifier -> Assignment -> Number -> Semicolon
+    ASTNode *ParseConditionals(); // Term -> + or - -> Term
+    ASTNode * ParsePrint(); // Print -> Left parenthesis -> Identifier -> Right parenthesis -> Semicolon
+    ASTNode * ParseAssignment(); // Identifier -> Assignment -> Number -> Semicolon
 
-    bool ParseStatement();
+    ASTNode * ParseStatement();
     void ParseProgram();
 };

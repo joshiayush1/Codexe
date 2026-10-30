@@ -7,12 +7,19 @@ enum class ASTType{
     PRINT,
     STRING,
     IDENTIFIER,
-    ASSIGNMENT,
     NUMBER,
+    IF,
+    IF_ELSE,
+    ELSE,
+    BLOCK,
+    COMPARISON_OPERATOR,
+    
     ADD_OPERATOR,
     SUB_OPERATOR,
     MUL_OPERATOR,
     DIV_OPERATOR,
+    
+    ASSIGNMENT,
     UNKNOWN,
 };
 
@@ -22,6 +29,8 @@ class ASTNode{
     ASTType type;
     ASTNode *left;
     ASTNode *right;
+
+    vector<ASTNode*> statements;
 
     ASTNode(string val, ASTType type){
         data = val;

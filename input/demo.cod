@@ -1,1 +1,10 @@
-string marks = "hello" + "world";
+int age = 17;
+
+if (age >= 18) {
+    print("Mature");
+    int marks = 90;
+    age = 20;
+}
+else{
+    print("Immature");
+}

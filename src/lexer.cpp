@@ -11,8 +11,27 @@ string TokenTypeToString(TokenType type)
         return "KEYWORD";
     case TokenType::IDENTIFIER:
         return "IDENTIFIER";
+    
+    case TokenType::IF:
+        return "IF";
+    case TokenType::ELSE:
+        return "ELSE";
+    
     case TokenType::ASSIGNMENT:
         return "ASSIGNMENT";
+    case TokenType::GREATER_THAN:
+        return "GREATER_THAN";
+    case TokenType::LESS_THAN:
+        return "LESS_THAN";
+    case TokenType::GREATER_EQUAL:
+        return "GREATER_EQUAL";
+    case TokenType::LESS_EQUAL:
+        return "LESS_EQUAL";
+    case TokenType::EQUAL_EQUAL:
+        return "EQUAL_EQUAL";
+    case TokenType::NOT_EQUAL:
+        return "NOT_EQUAL";
+    
     case TokenType::NUMBER:
         return "NUMBER";
     case TokenType::ADD_OPERATOR:
@@ -23,6 +42,7 @@ string TokenTypeToString(TokenType type)
         return "MUL_OPERATOR";
     case TokenType::DIV_OPERATOR:
         return "DIV_OPERATOR";
+
     case TokenType::LEFT_PAREN:
         return "LEFT_PAREN";
     case TokenType::RIGHT_PAREN:
@@ -31,10 +51,13 @@ string TokenTypeToString(TokenType type)
         return "LEFT_BRACE";
     case TokenType::RIGHT_BRACE:
         return "RIGHT_BRACE";
+
     case TokenType::STRING:
         return "STRING";
+
     case TokenType::SEMICOLON:
         return "SEMICOLON";
+        
     case TokenType::UNKNOWN:
         return "UNKNOWN";
     }
@@ -98,6 +121,24 @@ void processWord(Token token, string word, int line)
     {
         // cout << "Number : " << word << endl;
         token.type = TokenType::NUMBER;
+        token.value = word;
+        token.line = line;
+
+        tokens.push_back(token);
+    }
+    else if (type == TokenType::IF)
+    {
+        // cout << "If : " << word << endl;
+        token.type = TokenType::IF;
+        token.value = word;
+        token.line = line;
+
+        tokens.push_back(token);
+    }
+    else if (type == TokenType::ELSE)
+    {
+        // cout << "Else : " << word << endl;
+        token.type = TokenType::ELSE;
         token.value = word;
         token.line = line;
 
@@ -191,61 +232,74 @@ void tokenize()
 
                 tokens.push_back(token);
             }
-            else if (symbolType == TokenType::GREATER_EQUAL)
+            // Comparison Operators
+            else if (ch == '>')
             {
-                // cout << "ASSIGNMENT : " << ch << endl;
-                token.type = symbolType;
-                token.value = ch;
-                token.line = line;
+                if (file.peek() == '=')
+                {
+                    file.get(ch);
+                    token.type = TokenType::GREATER_EQUAL;
+                    token.value = ">=";
+                }
+                else
+                {
+                    token.type = TokenType::GREATER_THAN;
+                    token.value = ">";
+                }
 
+                token.line = line;
                 tokens.push_back(token);
             }
-            else if (symbolType == TokenType::LESS_THAN)
+            else if (ch == '<')
             {
-                // cout << "ASSIGNMENT : " << ch << endl;
-                token.type = symbolType;
-                token.value = ch;
-                token.line = line;
+                if (file.peek() == '=')
+                {
+                    file.get(ch);
+                    token.type = TokenType::LESS_EQUAL;
+                    token.value = "<=";
+                }
+                else
+                {
+                    token.type = TokenType::LESS_THAN;
+                    token.value = "<";
+                }
 
+                token.line = line;
                 tokens.push_back(token);
             }
-            else if (symbolType == TokenType::GREATER_EQUAL)
+            else if (ch == '=')
             {
-                // cout << "ASSIGNMENT : " << ch << endl;
-                token.type = symbolType;
-                token.value = ch;
-                token.line = line;
+                if (file.peek() == '=')
+                {
+                    file.get(ch);
+                    token.type = TokenType::EQUAL_EQUAL;
+                    token.value = "==";
+                }
+                else
+                {
+                    token.type = TokenType::ASSIGNMENT;
+                    token.value = "=";
+                }
 
+                token.line = line;
                 tokens.push_back(token);
             }
-            else if (symbolType == TokenType::LESS_EQUAL)
+            else if (ch == '!')
             {
-                // cout << "ASSIGNMENT : " << ch << endl;
-                token.type = symbolType;
-                token.value = ch;
-                token.line = line;
-
-                tokens.push_back(token);
+                if (file.peek() == '=')
+                {
+                    file.get(ch);
+                    token.type = TokenType::NOT_EQUAL;
+                    token.value = "!=";
+                    token.line = line;
+                    tokens.push_back(token);
+                }
+                else
+                {
+                    cout << "Unknown token: !" << endl;
+                }
             }
-            else if (symbolType == TokenType::EQUAL_EQUAL)
-            {
-                // cout << "ASSIGNMENT : " << ch << endl;
-                token.type = symbolType;
-                token.value = ch;
-                token.line = line;
 
-                tokens.push_back(token);
-            }
-            else if (symbolType == TokenType::NOT_EQUAL)
-            {
-                // cout << "ASSIGNMENT : " << ch << endl;
-                token.type = symbolType;
-                token.value = ch;
-                token.line = line;
-
-                tokens.push_back(token);
-            }
-            
             else if (symbolType == TokenType::ADD_OPERATOR)
             {
                 // cout << "ADD_OPERATOR : " << ch << endl;
@@ -334,7 +388,7 @@ void tokenize()
 
             else
             {
-                cout << "UNKOWN token" << endl;
+                cout << "Unkown token" << endl;
             }
         }
     }

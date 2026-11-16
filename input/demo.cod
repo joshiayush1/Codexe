@@ -1,6 +1,6 @@
 int age = 17;
 
-if (age >= 18) {
+if (age == 18) {
     print("Mature");
     int marks = 90;
     age = 20;
@@ -8,3 +8,4 @@ if (age >= 18) {
 else{
     print("Immature");
 }
+marks = 190;

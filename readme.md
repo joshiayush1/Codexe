@@ -37,7 +37,7 @@ Storing tokens in vector, for further processing
 
 3. Parser
 Its checks the grammar for codexe language 
-Grammar as in (Declrataion, Expression, etc)
+Grammar as in (Declarataion, Expression, etc)
 
 It checks for the tokens that should be in proper manner, otherwise throws error.
 
@@ -82,6 +82,9 @@ Symbol table datastructure stores the information about identifiers.
 Semantic Analysis checks meaning of the program.
 This makes sure that the code is not only syntactically correct but also meaningful.
 
+- Note:
+. It should not execute any part of the program while checking
+
 
 
 
@@ -108,14 +111,15 @@ Working
 
 
 
-3. Semantic analysis
+3. Symbol table
+Track declared variables and their types.
+
+
+
+4. Semantic analysis
 Check variable declarations, types, and valid variable usage.
 Next stage
 
-
-
-4. Symbol table
-Track declared variables and their types.
 
 
 

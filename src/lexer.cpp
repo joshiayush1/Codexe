@@ -196,7 +196,7 @@ void tokenize()
             // NewLine
             if (ch == '\n')
             {
-                // cout << "Whitespace" << endl;
+                // cout << "Endline" << endl;
                 line++;
                 continue;
             }
@@ -223,7 +223,7 @@ void tokenize()
             }
 
             // Operators
-            else if (symbolType == TokenType::ASSIGNMENT)
+            else if (symbolType == TokenType::ASSIGNMENT && file.peek() != '=')
             {
                 // cout << "ASSIGNMENT : " << ch << endl;
                 token.type = symbolType;

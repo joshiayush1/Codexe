@@ -49,10 +49,51 @@ string Semantic::getExpressionType(ASTNode *node, SymbolTable &st)
     {
         string leftType = getExpressionType(node->left, st);
         string rightType = getExpressionType(node->right, st);
-        if(leftType == "int" && rightType == "int"){
+        if (leftType == "int" && rightType == "int")
+        {
             return "int";
         }
         return "";
     }
     return "";
+}
+
+bool Semantic::checkConditionalErrors(
+    ASTNode *leftExpression,
+    ASTNode *rightExpression,
+    ASTNode *comparisonNode,
+    SymbolTable &st)
+{
+    string leftType = getExpressionType(leftExpression, st);
+    string rightType = getExpressionType(rightExpression, st);
+
+    string op = comparisonNode->data;
+
+    // Equality and inequality
+    if (op == "==" || op == "!=")
+    {
+        if (leftType != rightType)
+        {
+            cout << "Semantic Error: Cannot compare different data types" << endl;
+            return true;
+        }
+
+        return false;
+    }
+
+    // Relational operators
+    if (op == "<" || op == ">" ||
+        op == "<=" || op == ">=")
+    {
+        if (leftType != "int" || rightType != "int")
+        {
+            cout << "Semantic Error: Relational operators require integer operands" << endl;
+            return true;
+        }
+
+        return false;
+    }
+
+    cout << "Semantic Error: Invalid comparison operator" << endl;
+    return true;
 }

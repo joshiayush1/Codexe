@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../include/lexer.h"
+#include "../include/ast.h"
 
 class SymbolTable{
     private:

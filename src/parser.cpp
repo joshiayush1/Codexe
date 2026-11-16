@@ -1,4 +1,3 @@
-
 #include "../include/parser.h"
 #include "../include/semantic.h"
 
@@ -415,8 +414,20 @@ ASTNode *Parser::ParseConditionals()
         deleteNode(ifNode);
         return nullptr;
     }
-
+    cout << "Left Expression - ";
+    printNodeData(leftExpression);
+    cout << "Right Expression - ";
+    printNodeData(rightExpression);
+    cout << endl;
+    
     comparisonNode->right = rightExpression;
+
+    bool checkConditionlError = sem.checkConditionalErrors(leftExpression, rightExpression, comparisonNode, st);
+    if(checkConditionlError == true){
+        deleteNode(ifNode);
+        return nullptr;
+    }
+
 
     if (current >= tokens.size() ||
         tokens[current].type != TokenType::RIGHT_PAREN)

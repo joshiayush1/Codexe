@@ -428,7 +428,6 @@ ASTNode *Parser::ParseConditionals()
         return nullptr;
     }
 
-
     if (current >= tokens.size() ||
         tokens[current].type != TokenType::RIGHT_PAREN)
     {
@@ -448,6 +447,8 @@ ASTNode *Parser::ParseConditionals()
     }
 
     advance();
+    
+    st.enterScope();
 
     ASTNode *ifElseNode =
         new ASTNode("IF_ELSE_BLOCK", ASTType::BLOCK);
@@ -481,6 +482,8 @@ ASTNode *Parser::ParseConditionals()
 
     advance();
 
+    st.exitScope();
+
     if (current < tokens.size() && tokens[current].type == TokenType::ELSE)
     {
         advance();
@@ -494,6 +497,8 @@ ASTNode *Parser::ParseConditionals()
         }
 
         advance();
+        
+        st.enterScope();
 
         ASTNode *elseBlock = new ASTNode("ELSE_BLOCK", ASTType::BLOCK);
         ifElseNode->right = elseBlock;
@@ -505,6 +510,7 @@ ASTNode *Parser::ParseConditionals()
 
             if (statementNode == nullptr)
             {
+                st.exitScope();
                 deleteNode(ifNode);
                 return nullptr;
             }
@@ -520,7 +526,7 @@ ASTNode *Parser::ParseConditionals()
             return nullptr;
         }
         advance();
-
+        st.exitScope();
     }
     cout << "IF AST:" << endl;
     printNodeData(ifNode);
@@ -532,13 +538,13 @@ ASTNode *Parser::ParsePrint()
 {
     if (current >= tokens.size() ||
         tokens[current].type != TokenType::KEYWORD ||
-        tokens[current].value != "print")
+        tokens[current].value != "show")
     {
         return nullptr;
     }
 
     ASTNode *printNode =
-        new ASTNode(tokens[current].value, ASTType::PRINT);
+        new ASTNode(tokens[current].value, ASTType::SHOW);
 
     advance();
 
@@ -680,7 +686,7 @@ ASTNode *Parser::ParseStatement()
         return ParseDeclaration();
     }
     else if (tokens[current].type == TokenType::KEYWORD &&
-             tokens[current].value == "print")
+             tokens[current].value == "show")
     {
         return ParsePrint();
     }

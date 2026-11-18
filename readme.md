@@ -1,6 +1,6 @@
 Compiler using C++!
 
-Codexe -> Lexical Analysis -> Parser
+Codexe
 
 
 
@@ -87,51 +87,5 @@ This makes sure that the code is not only syntactically correct but also meaning
 
 
 
+5. Intermediate Representaion
 
-
-
-
-
-
-
-
-
-
-
-Your original Codexe compiler roadmap
-1. Lexical analysis
-Identify keywords, identifiers, numbers, operators, and symbols.
-Completed
-
-
-
-2. Syntax analysis and AST
-Parse statements and expressions into a tree.
-Working
-
-
-
-3. Symbol table
-Track declared variables and their types.
-
-
-
-4. Semantic analysis
-Check variable declarations, types, and valid variable usage.
-Next stage
-
-
-
-
-5. Intermediate code generation
-Convert AST expressions into three-address code (TAC).
-
-
-
-6. Code optimization
-Apply simple optimizations to intermediate code.
-
-
-
-7. Code generation
-Generate pseudo-assembly or assembly-like instructions in output.asm.

@@ -1,28 +1,66 @@
 #include "../include/symbol_table.h"
 
+SymbolTable::SymbolTable(){
+    symbolMap.push_back({});
+    scopeNo.push(0);
+}
+
+void SymbolTable::enterScope()
+{
+    int newScope = symbolMap.size();
+    
+    symbolMap.push_back({});
+    scopeNo.push(newScope);
+}
+
+void SymbolTable::exitScope()
+{
+    if (scopeNo.size() > 1)
+    {
+        scopeNo.pop();
+    }
+}
+
 void SymbolTable::addSymbol(string name, string type){
-    symbolMap[name] = type;
+    symbolMap[scopeNo.top()][name] = type;
 }
 
 string SymbolTable::getSymbolType(string name){
-    auto it = symbolMap.find(name);
-    if(it != symbolMap.end()){
-        return it->second;
+    stack<int> temp = scopeNo;
+
+    while(!temp.empty()){
+        auto it = symbolMap[temp.top()].find(name);
+        if(it != symbolMap[temp.top()].end()){
+            return it->second;
+        }
+        temp.pop();
     }
     return "";
 }
 
 void SymbolTable::printSymbolType(string name){
-    cout << "Type for "<< name << " is: " << symbolMap[name] << endl;
+    string type = getSymbolType(name);
+
+    if(type != ""){
+        cout << "Type for "<< name << " is: " << type << endl;
+    }
+    else{
+        cout << "Error: Variable name not found" << endl;
+    }
 }
 
 bool SymbolTable::isPresent(string name){
-   return symbolMap.find(name) != symbolMap.end();
+    stack<int> temp = scopeNo;
 
-    // Returns true if the variable is found because
-    // find() returns an iterator pointing to its position,
-    // which is not equal to end().
+    while(!temp.empty()){
+        if(symbolMap[temp.top()].find(name) != symbolMap[temp.top()].end()){
+            return true;
+        }
+        temp.pop();
+    }
+    return false;
+}
 
-    // Returns false if the variable is not found because
-    // find() returns end(), making both sides equal.
+bool SymbolTable::isPresentinCurrentScope(string name){
+    return (symbolMap[scopeNo.top()].find(name) != symbolMap[scopeNo.top()].end());
 }

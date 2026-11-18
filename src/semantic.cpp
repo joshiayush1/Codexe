@@ -12,7 +12,7 @@ bool Semantic::checkVariable(string name, SymbolTable &st)
 
 bool Semantic::reDeclaration(string name, SymbolTable &st)
 {
-    if (st.isPresent(name))
+    if (st.isPresentinCurrentScope(name))
     {
         cout << "Error: Redeclarataion of '" << name << "'" << endl;
         return true;

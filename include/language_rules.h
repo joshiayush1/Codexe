@@ -7,7 +7,7 @@ unordered_map<string, TokenType> mpp;  //assigning key according to token type s
 void InitializerRules(){
     mpp["int"] = TokenType::KEYWORD;   
     mpp["string"] = TokenType::KEYWORD;   
-    mpp["print"] = TokenType::KEYWORD;   
+    mpp["show"] = TokenType::KEYWORD;   // print
     mpp["if"] = TokenType::IF;
     mpp["else"] = TokenType::ELSE;
 

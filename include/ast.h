@@ -4,7 +4,7 @@
 
 enum class ASTType{
     DECLARATION,
-    PRINT,
+    SHOW, // print
     STRING,
     IDENTIFIER,
     NUMBER,

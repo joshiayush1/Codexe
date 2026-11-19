@@ -2,7 +2,13 @@ Compiler using C++!
 
 Codexe
 
+*For declaration - 
 
+Syntax:
+declare age : int = 25
+
+For understanding:
+(declare age variable : that is of integer datatype = which is 25)
 
 1. Define the codexe language
 

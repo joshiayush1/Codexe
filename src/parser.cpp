@@ -105,23 +105,18 @@ void Parser::deleteNode(ASTNode *node)
 ASTNode *Parser::ParseDeclaration()
 {
     if (current >= tokens.size() ||
-        tokens[current].type != TokenType::KEYWORD)
+        tokens[current].type != TokenType::KEYWORD || 
+        tokens[current].value != "declare")
     {
         return nullptr;
     }
-
-    string currType = tokens[current].value;
-
-    ASTNode *declarationNode =
-        new ASTNode(currType, ASTType::DECLARATION);
-
+    
     advance();
 
     if (current >= tokens.size() ||
         tokens[current].type != TokenType::IDENTIFIER)
     {
         cout << "Error: Expected an identifier" << endl;
-        deleteNode(declarationNode);
         return nullptr;
     }
 
@@ -132,12 +127,39 @@ ASTNode *Parser::ParseDeclaration()
         cout << "Error: Variable '" << currName
              << "' already declared" << endl;
 
-        deleteNode(declarationNode);
         return nullptr;
     }
 
     ASTNode *identifierNode =
         new ASTNode(currName, ASTType::IDENTIFIER);
+
+    advance();
+    
+    if (current >= tokens.size() ||
+        tokens[current].type != TokenType::COLON)
+    {
+        cout << "Error: Expected a colon"<< endl;
+        deleteNode(identifierNode);
+        return nullptr;
+    }
+
+    advance();
+
+    if (current >= tokens.size() ||
+        tokens[current].type != TokenType::KEYWORD || 
+        (tokens[current].value != "int" && tokens[current].value != "string"))
+    {
+
+        cout << "Error: Expected a valid data type" << endl;
+        deleteNode(identifierNode);
+        return nullptr;
+    }
+
+    string currType = tokens[current].value;
+
+    ASTNode *declarationNode =
+        new ASTNode(currType, ASTType::DECLARATION);
+
 
     declarationNode->left = identifierNode;
 
@@ -481,8 +503,8 @@ ASTNode *Parser::ParseConditionals()
     }
 
     advance();
-
     st.exitScope();
+
 
     if (current < tokens.size() && tokens[current].type == TokenType::ELSE)
     {
@@ -525,8 +547,8 @@ ASTNode *Parser::ParseConditionals()
             deleteNode(ifNode);
             return nullptr;
         }
-        advance();
         st.exitScope();
+        advance();
     }
     cout << "IF AST:" << endl;
     printNodeData(ifNode);
@@ -680,8 +702,7 @@ ASTNode *Parser::ParseStatement()
         return nullptr;
 
     if (tokens[current].type == TokenType::KEYWORD &&
-        (tokens[current].value == "int" ||
-         tokens[current].value == "string"))
+        tokens[current].value == "declare")
     {
         return ParseDeclaration();
     }

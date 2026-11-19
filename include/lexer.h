@@ -30,6 +30,7 @@ enum class TokenType{
     LEFT_BRACE,
     RIGHT_BRACE,
     
+    COLON,
     SEMICOLON,
     UNKNOWN,
 };

@@ -207,6 +207,17 @@ void tokenize()
                 continue;
             }
 
+            // Colon 
+            else if (symbolType == TokenType::COLON)
+            {
+                // cout << "Colon : " << ch << endl;
+                token.type = symbolType;
+                token.value = ch;
+                token.line = line;
+
+                tokens.push_back(token);
+            }
+
             // Strings
             else if (ch == '"')
             {
@@ -217,17 +228,6 @@ void tokenize()
                 // cout << str << endl;
                 token.type = TokenType::STRING;
                 token.value = str;
-                token.line = line;
-
-                tokens.push_back(token);
-            }
-
-            // Operators
-            else if (symbolType == TokenType::ASSIGNMENT && file.peek() != '=')
-            {
-                // cout << "ASSIGNMENT : " << ch << endl;
-                token.type = symbolType;
-                token.value = ch;
                 token.line = line;
 
                 tokens.push_back(token);

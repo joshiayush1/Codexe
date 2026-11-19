@@ -1,13 +1,2 @@
-int age = 25;
-
-if(age > 18){
-    if(age > 21){
-        show(age);
-    }
-    else{
-        show(18);
-    }
-}
-else{
-    show(0);
-}
+declare age : int = 18;
+declare age : int;

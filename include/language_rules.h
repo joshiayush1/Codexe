@@ -5,6 +5,7 @@
 unordered_map<string, TokenType> mpp;  //assigning key according to token type so we directly use map for accessing
 
 void InitializerRules(){
+    mpp["declare"] = TokenType::KEYWORD;   
     mpp["int"] = TokenType::KEYWORD;   
     mpp["string"] = TokenType::KEYWORD;   
     mpp["show"] = TokenType::KEYWORD;   // print
@@ -31,6 +32,7 @@ void InitializerRules(){
     mpp["{"] = TokenType::LEFT_BRACE;
     mpp["}"] = TokenType::RIGHT_BRACE;
 
+    mpp[":"] = TokenType::COLON;
     mpp[";"] = TokenType::SEMICOLON;
 }
 

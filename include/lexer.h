@@ -8,9 +8,12 @@ enum class TokenType{
     STRING,
     NUMBER,
     
-    IF,
-    ELSE,
+    // IF,
+    // ELSE,
     
+    // FOR,
+    // WHILE,
+
     ASSIGNMENT,
     GREATER_THAN,
     LESS_THAN,
@@ -23,7 +26,6 @@ enum class TokenType{
     SUB_OPERATOR,
     MUL_OPERATOR,
     DIV_OPERATOR,
-    
     
     LEFT_PAREN,
     RIGHT_PAREN,

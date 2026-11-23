@@ -94,4 +94,11 @@ This makes sure that the code is not only syntactically correct but also meaning
 
 
 5. Intermediate Representaion
+Its a simple represntation of program that sits between source AST and machine code.
 
+-Why IR
+. Directly coverting orignal AST to assemly is complicated
+. IR coverts AST in simple instructions.
+. Than that instructions are processed by assembly
+
+- Three-Address Code(TAC)

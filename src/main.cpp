@@ -14,6 +14,7 @@
 
 #include "../include/headers.h"
 #include "../include/parser.h"
+#include "../include/ir.h"
 
 int main()
 {
@@ -21,6 +22,9 @@ int main()
 
     Parser parser;
     parser.ParseProgram();
+
+    IR ir;
+    ir.IRGenerator(parser.getAST());
 
     return 0;
 }

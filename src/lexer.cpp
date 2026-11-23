@@ -12,10 +12,15 @@ string TokenTypeToString(TokenType type)
     case TokenType::IDENTIFIER:
         return "IDENTIFIER";
     
-    case TokenType::IF:
-        return "IF";
-    case TokenType::ELSE:
-        return "ELSE";
+    // case TokenType::IF:
+    //     return "IF";
+    // case TokenType::ELSE:
+    //     return "ELSE";
+    
+    // case TokenType::FOR:
+    //     return "FOR";
+    // case TokenType::WHILE:
+    //     return "WHILE";
     
     case TokenType::ASSIGNMENT:
         return "ASSIGNMENT";
@@ -121,24 +126,6 @@ void processWord(Token token, string word, int line)
     {
         // cout << "Number : " << word << endl;
         token.type = TokenType::NUMBER;
-        token.value = word;
-        token.line = line;
-
-        tokens.push_back(token);
-    }
-    else if (type == TokenType::IF)
-    {
-        // cout << "If : " << word << endl;
-        token.type = TokenType::IF;
-        token.value = word;
-        token.line = line;
-
-        tokens.push_back(token);
-    }
-    else if (type == TokenType::ELSE)
-    {
-        // cout << "Else : " << word << endl;
-        token.type = TokenType::ELSE;
         token.value = word;
         token.line = line;
 

@@ -3,6 +3,12 @@
 
 SymbolTable st = SymbolTable();
 Semantic sem = Semantic();
+IR ir;
+
+vector<ASTNode *> Parser::getAST()
+{
+    return programAST;
+}
 
 Parser::Parser()
 {
@@ -104,13 +110,18 @@ void Parser::deleteNode(ASTNode *node)
 
 ASTNode *Parser::ParseDeclaration()
 {
+    // Declaration AST
+    //                     int(declarationNode)
+
+    // age(identifierNode)                      20(expressionNode)
+
     if (current >= tokens.size() ||
-        tokens[current].type != TokenType::KEYWORD || 
+        tokens[current].type != TokenType::KEYWORD ||
         tokens[current].value != "declare")
     {
         return nullptr;
     }
-    
+
     advance();
 
     if (current >= tokens.size() ||
@@ -134,11 +145,11 @@ ASTNode *Parser::ParseDeclaration()
         new ASTNode(currName, ASTType::IDENTIFIER);
 
     advance();
-    
+
     if (current >= tokens.size() ||
         tokens[current].type != TokenType::COLON)
     {
-        cout << "Error: Expected a colon"<< endl;
+        cout << "Error: Expected a colon" << endl;
         deleteNode(identifierNode);
         return nullptr;
     }
@@ -146,7 +157,7 @@ ASTNode *Parser::ParseDeclaration()
     advance();
 
     if (current >= tokens.size() ||
-        tokens[current].type != TokenType::KEYWORD || 
+        tokens[current].type != TokenType::KEYWORD ||
         (tokens[current].value != "int" && tokens[current].value != "string"))
     {
 
@@ -159,7 +170,6 @@ ASTNode *Parser::ParseDeclaration()
 
     ASTNode *declarationNode =
         new ASTNode(currType, ASTType::DECLARATION);
-
 
     declarationNode->left = identifierNode;
 
@@ -337,6 +347,10 @@ ASTNode *Parser::ParseTerm()
 
 ASTNode *Parser::ParseExpression()
 {
+    // Expression AST
+    //                     +(operatorNode)
+
+    // a(leftOperand)                       20(rightOperand)
     ASTNode *leftOperand = ParseTerm();
 
     if (leftOperand == nullptr)
@@ -382,8 +396,16 @@ ASTNode *Parser::ParseExpression()
 
 ASTNode *Parser::ParseConditionals()
 {
+    // Conditional AST
+    //                                    if(ifNode)
+
+    //             ==(comparisonNode)                         (if_else_block)
+
+    //  age(leftExpression)  18(rightExpression)         (if_block)       (else_block)
+
     if (current >= tokens.size() ||
-        tokens[current].type != TokenType::IF)
+        (tokens[current].type != TokenType::KEYWORD &&
+         tokens[current].value == "if"))
     {
         return nullptr;
     }
@@ -441,11 +463,12 @@ ASTNode *Parser::ParseConditionals()
     cout << "Right Expression - ";
     printNodeData(rightExpression);
     cout << endl;
-    
+
     comparisonNode->right = rightExpression;
 
     bool checkConditionlError = sem.checkConditionalErrors(leftExpression, rightExpression, comparisonNode, st);
-    if(checkConditionlError == true){
+    if (checkConditionlError == true)
+    {
         deleteNode(ifNode);
         return nullptr;
     }
@@ -469,7 +492,7 @@ ASTNode *Parser::ParseConditionals()
     }
 
     advance();
-    
+
     st.enterScope();
 
     ASTNode *ifElseNode =
@@ -505,8 +528,8 @@ ASTNode *Parser::ParseConditionals()
     advance();
     st.exitScope();
 
-
-    if (current < tokens.size() && tokens[current].type == TokenType::ELSE)
+    if (current < tokens.size() && (tokens[current].type == TokenType::KEYWORD &&
+                                    tokens[current].value == "else"))
     {
         advance();
 
@@ -519,7 +542,248 @@ ASTNode *Parser::ParseConditionals()
         }
 
         advance();
-        
+
+        st.enterScope();
+
+        ASTNode *elseBlock = new ASTNode("ELSE_BLOCK", ASTType::BLOCK);
+        ifElseNode->right = elseBlock;
+
+        while (current < tokens.size() &&
+               tokens[current].type != TokenType::RIGHT_BRACE)
+        {
+            ASTNode *statementNode = ParseStatement();
+
+            if (statementNode == nullptr)
+            {
+                st.exitScope();
+                deleteNode(ifNode);
+                return nullptr;
+            }
+
+            elseBlock->statements.push_back(statementNode);
+        }
+
+        if (current >= tokens.size() ||
+            tokens[current].type != TokenType::RIGHT_BRACE)
+        {
+            cout << "Error: Expected '}' after else block" << endl;
+            deleteNode(ifNode);
+            return nullptr;
+        }
+        st.exitScope();
+        advance();
+    }
+    cout << "IF AST:" << endl;
+    printNodeData(ifNode);
+
+    return ifNode;
+}
+
+ASTNode *Parser::ParseForLoop(){
+    // ForLoop AST
+    //                                          for(forNode)
+
+    //               int(declarationNode)                                    within(conditionNode)
+
+    //        it(iteratorNode) 0(iteratorValueNode)                 age(variableNode)    (for_block)
+    
+
+    if (current >= tokens.size() ||
+        (tokens[current].type != TokenType::KEYWORD &&
+         tokens[current].value == "for"))
+    {
+        return nullptr;
+    }
+
+    ASTNode *forNode =
+        new ASTNode(tokens[current].value, ASTType::FOR);
+
+    advance();
+
+    if (current >= tokens.size() ||
+        tokens[current].type != TokenType::LEFT_PAREN)
+    {
+        cout << "Error: Expected '('" << endl;
+        deleteNode(forNode);
+        return nullptr;
+    }
+
+    advance();
+
+    if (current >= tokens.size() ||
+        tokens[current].type != TokenType::IDENTIFIER)
+    {
+        cout << "Error: Expected an identifier" << endl;
+        return nullptr;
+    }
+
+    string currName = tokens[current].value;
+
+    if (sem.reDeclaration(currName, st))
+    {
+        cout << "Error: Variable '" << currName
+             << "' already declared" << endl;
+
+        return nullptr;
+    }
+
+    ASTNode *iteratorNode =
+        new ASTNode(currName, ASTType::IDENTIFIER);
+
+    advance();
+
+    if (current >= tokens.size() ||
+        tokens[current].type != TokenType::COLON)
+    {
+        cout << "Error: Expected a colon" << endl;
+        deleteNode(iteratorNode);
+        return nullptr;
+    }
+
+    advance();
+
+    if (current >= tokens.size() ||
+        tokens[current].type != TokenType::KEYWORD ||
+        (tokens[current].value != "int" && tokens[current].value != "string"))
+    {
+
+        cout << "Error: Expected a valid data type" << endl;
+        deleteNode(iteratorNode);
+        return nullptr;
+    }
+
+    string currType = tokens[current].value;
+
+    ASTNode *declarationNode =
+        new ASTNode(currType, ASTType::DECLARATION);
+
+    declarationNode->left = iteratorNode;
+
+    advance();
+
+    if (current >= tokens.size() || tokens[current].value != "=")
+    {
+        cout << "Error: Expected '='" << endl;
+        deleteNode(iteratorNode);
+        return nullptr;
+    }
+
+    ASTNode *assignmentNode =
+        new ASTNode(tokens[current].value, ASTType::ASSIGNMENT);
+
+    if (current >= tokens.size() || tokens[current].type != TokenType::NUMBER)
+    {
+        cout << "Error: Expected iterator value" << endl;
+        deleteNode(iteratorNode);
+        return nullptr;
+    }
+
+    ASTNode *valueNode =
+        new ASTNode(tokens[current].value, ASTType::ASSIGNMENT);
+
+    advance();
+
+    ASTNode *withinNode =
+        new ASTNode(tokens[current].value, ASTType::WITHIN);
+
+    withinNode->left = iteratorNode;
+    // comparisonNode->left = leftExpression;
+
+    advance();
+
+    ASTNode *rightExpression = ParseExpression();
+
+    if (rightExpression == nullptr)
+    {
+        cout << "Error: Expected right expression in condition" << endl;
+        deleteNode(ifNode);
+        return nullptr;
+    }
+    cout << "Left Expression - ";
+    printNodeData(leftExpression);
+    cout << "Right Expression - ";
+    printNodeData(rightExpression);
+    cout << endl;
+
+    comparisonNode->right = rightExpression;
+
+    bool checkConditionlError = sem.checkConditionalErrors(leftExpression, rightExpression, comparisonNode, st);
+    if (checkConditionlError == true)
+    {
+        deleteNode(ifNode);
+        return nullptr;
+    }
+
+    if (current >= tokens.size() ||
+        tokens[current].type != TokenType::RIGHT_PAREN)
+    {
+        cout << "Error: Expected ')'" << endl;
+        deleteNode(ifNode);
+        return nullptr;
+    }
+
+    advance();
+
+    if (current >= tokens.size() ||
+        tokens[current].type != TokenType::LEFT_BRACE)
+    {
+        cout << "Error: Expected '{' after if" << endl;
+        deleteNode(ifNode);
+        return nullptr;
+    }
+
+    advance();
+
+    st.enterScope();
+
+    ASTNode *ifElseNode =
+        new ASTNode("IF_ELSE_BLOCK", ASTType::BLOCK);
+    ifNode->right = ifElseNode;
+
+    ASTNode *ifBlock =
+        new ASTNode("IF_BLOCK", ASTType::BLOCK);
+    ifElseNode->left = ifBlock;
+
+    while (current < tokens.size() &&
+           tokens[current].type != TokenType::RIGHT_BRACE)
+    {
+        ASTNode *statementNode = ParseStatement();
+
+        if (statementNode == nullptr)
+        {
+            deleteNode(ifNode);
+            return nullptr;
+        }
+
+        ifBlock->statements.push_back(statementNode);
+    }
+
+    if (current >= tokens.size() ||
+        tokens[current].type != TokenType::RIGHT_BRACE)
+    {
+        cout << "Error: Expected '}' after if block" << endl;
+        deleteNode(ifNode);
+        return nullptr;
+    }
+
+    advance();
+    st.exitScope();
+
+    if (current < tokens.size() && (tokens[current].type == TokenType::KEYWORD &&
+                                    tokens[current].value == "else"))
+    {
+        advance();
+
+        if (current >= tokens.size() ||
+            tokens[current].type != TokenType::LEFT_BRACE)
+        {
+            cout << "Error: Expected '{' after else" << endl;
+            deleteNode(ifNode);
+            return nullptr;
+        }
+
+        advance();
+
         st.enterScope();
 
         ASTNode *elseBlock = new ASTNode("ELSE_BLOCK", ASTType::BLOCK);
@@ -715,9 +979,20 @@ ASTNode *Parser::ParseStatement()
     {
         return ParseAssignment();
     }
-    else if (tokens[current].type == TokenType::IF)
+    else if (tokens[current].type == TokenType::KEYWORD &&
+             tokens[current].value == "if")
     {
         return ParseConditionals();
+    }
+    else if (tokens[current].type == TokenType::KEYWORD &&
+             tokens[current].value == "for")
+    {
+        return ParseForLoop();
+    }
+    else if (tokens[current].type == TokenType::KEYWORD &&
+             tokens[current].value == "while")
+    {
+        return ParseWhileLoop();
     }
 
     cout << "Error at line " << tokens[current].line
@@ -737,6 +1012,6 @@ void Parser::ParseProgram()
         if (statementNode == nullptr)
             return;
 
-        deleteNode(statementNode);
+        programAST.push_back(statementNode);
     }
 }

@@ -1,2 +1,6 @@
-declare age : int = 18;
-declare age : int;
+declare age : int = 20;
+show(age);
+
+for (it : int = 0 within age){
+    show(i);
+}

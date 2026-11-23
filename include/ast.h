@@ -8,11 +8,16 @@ enum class ASTType{
     STRING,
     IDENTIFIER,
     NUMBER,
+    
     IF,
     IF_ELSE,
     ELSE,
     BLOCK,
     COMPARISON_OPERATOR,
+    
+    FOR,
+    WITHIN,
+    WHILE,
     
     ADD_OPERATOR,
     SUB_OPERATOR,

@@ -7,12 +7,6 @@ enum class TokenType{
     IDENTIFIER,
     STRING,
     NUMBER,
-    
-    // IF,
-    // ELSE,
-    
-    // FOR,
-    // WHILE,
 
     ASSIGNMENT,
     GREATER_THAN,

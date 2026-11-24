@@ -21,5 +21,7 @@ class IR{
     void printAST(ASTNode* node);
 
     void IRGenerator(vector<ASTNode*> statements);
-
+    void generateIfIR(ASTNode* node);
+    void generateForIR(ASTNode* node);
+    void generateWhileIR(ASTNode* node);
 };

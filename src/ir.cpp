@@ -23,10 +23,10 @@ string IR::labelCount()
 // Ex. 1:
 // declare result : int = 5 + 2 * 3;
 
-//post-order traversal
-//                 +
-//             5       *
-//                   2    3
+// post-order traversal
+//                  +
+//              5       *
+//                    2    3
 
 // t1 = 2*3
 // t2 = 5 + t1
@@ -35,10 +35,10 @@ string IR::labelCount()
 // Ex. 2:
 // declare result : int = 5 * 2 + 3;
 
-//post-order traversal
-//                 *
-//             5       +
-//                   2    3
+// post-order traversal
+//                  *
+//              5       +
+//                    2    3
 
 // t1 = 5 * 2
 // t2 = t1 + 3
@@ -81,6 +81,92 @@ void IR::printAST(ASTNode *node)
     cout << "Data : " << node->data << endl;
 }
 
+void IR::generateIfIR(ASTNode *node)
+{
+    ASTNode *comparisonNode = node->left;
+
+    string comparisonOp = comparisonNode->data;
+
+    string leftExp = generateExpressionIR(comparisonNode->left);
+    string rightExp = generateExpressionIR(comparisonNode->right);
+
+    ASTNode *if_block = node->right->left;
+    ASTNode *else_block = node->right->right;
+
+    string label1 = labelCount();
+    string label2 = labelCount();
+    string endLabel = labelCount();
+
+    if (else_block == nullptr)
+    {
+        endLabel = label2;
+    }
+
+    cout << node->data << " " << leftExp << " " << comparisonOp << " " << rightExp << " goto " << label1 << endl;
+
+    cout << "goto " << label2 << endl;
+
+    cout << label1 << ":" << endl;
+    IRGenerator(if_block->statements);
+    if (else_block != nullptr)
+    {
+        cout << "goto " << endLabel << endl;
+    }
+
+    if (else_block != nullptr)
+    {
+        cout << label2 << ":" << endl;
+        IRGenerator(else_block->statements);
+    }
+
+    cout << endLabel << ":" << endl;
+}
+
+void IR::generateForIR(ASTNode *node)
+{
+
+}
+
+void IR::generateWhileIR(ASTNode *node)
+{
+    ASTNode *comparisonNode = node->left;
+    ASTNode *while_block = node->right;
+    
+    string startLabel = labelCount();
+    string endLabel = labelCount();
+    
+    cout << startLabel << ":" << endl;
+    
+    string leftExp = generateExpressionIR(comparisonNode->left);
+    string rightExp = generateExpressionIR(comparisonNode->right);
+    
+    string op = comparisonNode->data;
+
+    if (op == ">")
+        op = "<=";
+    else if (op == "<")
+        op = ">=";
+    else if (op == ">=")
+        op = "<";
+    else if (op == "<=")
+        op = ">";
+    else if (op == "==")
+        op = "!=";
+    else if (op == "!=")
+    op = "==";
+    
+    
+    cout << "if" << " " << leftExp << " " << op << " " << rightExp << " goto " << endLabel << endl;
+
+    if (while_block != nullptr)
+    {
+        IRGenerator(while_block->statements);
+    }
+
+    cout << "goto " << startLabel << endl;
+    cout << endLabel << ":" << endl;
+}
+
 void IR::IRGenerator(vector<ASTNode *> statements)
 {
     for (auto node : statements)
@@ -118,41 +204,19 @@ void IR::IRGenerator(vector<ASTNode *> statements)
         else if (node->type == ASTType::IF)
         {
             cout << "IF IR:" << endl;
-            ASTNode *comparisonNode = node->left;
+            generateIfIR(node);
+        }
 
-            string comparisonOp = comparisonNode->data;
+        else if (node->type == ASTType::FOR)
+        {
+            cout << "FOR IR:" << endl;
+            generateForIR(node);
+        }
 
-            string leftExp = generateExpressionIR(comparisonNode->left);
-            string rightExp = generateExpressionIR(comparisonNode->right);
-
-            ASTNode* if_block = node->right->left; 
-            ASTNode* else_block = node->right->right;
-
-            string label1 = labelCount();
-            string label2 = labelCount();
-            string endLabel = labelCount();
-
-            if(else_block == nullptr){
-                endLabel = label2;
-            }
-
-            cout << node->data << " " << leftExp << " " << comparisonOp << " " << rightExp << " goto " << label1 << endl;
-
-            cout << "goto " << label2 << endl;
-            
-            cout << label1 << ":" << endl;
-            IRGenerator(if_block->statements);
-            if (else_block != nullptr)
-            {
-                cout << "goto " << endLabel << endl;
-            }
-            
-            if(else_block != nullptr){
-                cout << label2 << ":" << endl;
-                IRGenerator(else_block->statements);
-            }
-            
-            cout << endLabel << ":" << endl;
+        else if (node->type == ASTType::WHILE)
+        {
+            cout << "WHILE IR:" << endl;
+            generateWhileIR(node);
         }
     }
 }

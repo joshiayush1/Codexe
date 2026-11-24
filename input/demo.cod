@@ -1,6 +1,9 @@
-declare age : int = 20;
-show(age);
+declare age : int = 5;
 
-for (it : int = 0 within age){
-    show(i);
+while (age > 0) {
+    show(age);
+    age = age - 1;
+}
+if(age == 5){
+    show("true");
 }

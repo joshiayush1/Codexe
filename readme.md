@@ -97,8 +97,27 @@ This makes sure that the code is not only syntactically correct but also meaning
 Its a simple represntation of program that sits between source AST and machine code.
 
 -Why IR
-. Directly coverting orignal AST to assemly is complicated
+. Directly converting orignal AST to assemly is complicated
 . IR coverts AST in simple instructions.
 . Than that instructions are processed by assembly
 
 - Three-Address Code(TAC)
+TAC is used for intermediate representation in which each instruction contains at most three addresses(one destination address and two operand addresses).
+
+For ex:
+declare age : int = 20 + 0 + 9 + 8 + 7;
+
+Output:
+t1 = 20 + 0
+t2 = t1 + 9
+t3 = t2 + 8
+t4 = t3 + 7
+age = t4
+
+ - Note:
+Each arithmetic instruction has at most three addresses:
+destination = operand1 operator operand2
+
+
+
+6. 

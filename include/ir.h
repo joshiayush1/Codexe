@@ -24,4 +24,6 @@ class IR{
     void generateIfIR(ASTNode* node);
     void generateForIR(ASTNode* node);
     void generateWhileIR(ASTNode* node);
+
+    void printIR();
 };

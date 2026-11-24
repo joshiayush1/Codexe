@@ -682,19 +682,15 @@ ASTNode *Parser::ParseForLoop()
 
     advance();
 
-    if (current >= tokens.size() || tokens[current].type != TokenType::NUMBER)
-    {
-        cout << "Error: Expected iterator value" << endl;
+    ASTNode* iteratorValueNode = ParseExpression();
+
+    if(iteratorValueNode == nullptr){
+        cout << "Error: Invalid for loop initalization" << endl;
         deleteNode(forNode);
         return nullptr;
     }
 
-    ASTNode *iteratorValueNode =
-        new ASTNode(tokens[current].value, ASTType::NUMBER);
-
     declarationNode->right = iteratorValueNode;
-
-    advance();
 
     if (current >= tokens.size() || tokens[current].type != TokenType::KEYWORD || tokens[current].value != "within")
     {
@@ -709,33 +705,16 @@ ASTNode *Parser::ParseForLoop()
     forNode->right = withinNode;
     advance();
 
-    if (current >= tokens.size() || tokens[current].type != TokenType::IDENTIFIER)
+    ASTNode* limitNode = ParseExpression();
+
+    if (limitNode == nullptr)
     {
-        cout << "Error: Expected a variable" << endl;
-        deleteNode(forNode);
-        return nullptr;
-    }
-    string currName2 = tokens[current].value;
-
-    if (!sem.checkVariable(currName2, st)){
+        cout << "Error: Invalid for loop limit" << endl;
         deleteNode(forNode);
         return nullptr;
     }
 
-    string variableType = st.getSymbolType(currName2);
-
-    if(declarationNode->data != variableType){
-        cout << "Error: Datatype mismatch" << endl;
-        deleteNode(forNode);
-        return nullptr;
-    }
-
-    ASTNode *variableNode =
-        new ASTNode(currName2, ASTType::IDENTIFIER);
-
-    withinNode->left = variableNode;
-
-    advance();
+    withinNode->left = limitNode;
 
     if (current >= tokens.size() ||
         tokens[current].type != TokenType::RIGHT_PAREN)

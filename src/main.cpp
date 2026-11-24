@@ -25,6 +25,7 @@ int main()
 
     IR ir;
     ir.IRGenerator(parser.getAST());
+    ir.printIR();
 
     return 0;
 }

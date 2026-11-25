@@ -15,6 +15,7 @@
 #include "../include/headers.h"
 #include "../include/parser.h"
 #include "../include/ir.h"
+#include "../include/optimizer.h"
 
 int main()
 {
@@ -26,6 +27,9 @@ int main()
     IR ir;
     ir.IRGenerator(parser.getAST());
     ir.printIR();
+
+    Optimizer opt;
+    opt.optimize(ir.getInstructions());
 
     return 0;
 }

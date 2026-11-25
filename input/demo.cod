@@ -1,13 +1,3 @@
 declare age : int = 20;
 
-while (age + 1 > 0 + 1) {
-    show(age);
-    age = age - 1;
-}
-if(age + 1 == 5 + 1){
-    show("true");
-}
-
-for(it : int = 0 + 1 within age + 3) {
-    show(it);
-}
+age = 20 + 5;

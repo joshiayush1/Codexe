@@ -34,6 +34,10 @@ IR::IR()
     labelCounter = 0;
 }
 
+vector<string> IR::getInstructions(){
+    return instructions;
+}
+
 string IR::tempCount()
 {
     tempCounter++;
@@ -270,7 +274,7 @@ void IR::IRGenerator(vector<ASTNode *> statements)
 }
 void IR::printIR()
 {
-    cout << "Print IR:" << endl;
+    cout << "Program IR:" << endl;
     for (string instruction : instructions)
     {
         cout << instruction << endl;

@@ -11,11 +11,11 @@ class IR{
 
     string tempCount();
     string labelCount();
+    vector<string> instructions;
 
     public:
     IR();
 
-    vector<string> instructions;
     
     string generateExpressionIR(ASTNode* node);
     void printAST(ASTNode* node);
@@ -26,4 +26,6 @@ class IR{
     void generateWhileIR(ASTNode* node);
 
     void printIR();
+
+    vector<string> getInstructions();
 };

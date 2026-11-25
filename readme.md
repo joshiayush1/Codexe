@@ -12,8 +12,8 @@ For understanding:
 
 1. Define the codexe language
 
-- We have to define rules for codexe
-We define what are the rules of codexe language
+- Define rules for codexe
+Define what are the rules of codexe language
 Like int is a keyword
      age is a identifier
 
@@ -22,7 +22,7 @@ Like int is a keyword
 2. Lexer (Lexical Analyzer)
 (KEYWORD, NUMBER, IDENTIFIER, OPERATOR, STRING) is our token type.
 
-- We have to create tokens in order to share it to parser.
+- Create tokens in order to share it to parser.
 
 The code first is received as text, charcter by charcter.
 Then tokens are created using that text.
@@ -80,7 +80,7 @@ The tree preserves the order of operations: first (4-1=3), then (9*3=27), and fi
 - Symbol Table
 Symbol table datastructure stores the information about identifiers.
 
-- Why do we need symbol table?
+- Why is there a need of symbol table?
 . It tells us if the variable was created previously
 . It stores new variables and their type
 
@@ -120,4 +120,40 @@ destination = operand1 operator operand2
 
 
 
-6. 
+6. Code Optimization
+Code Optimization is the method that is handled during compilation phase. 
+Its used to improve the generated Intermediate Representations to make program more efficient(saves time for runtime execution).
+Optimization does not change program's orignal behavior
+
+-Why used?
+. Reduce unnecessary instructions
+. Reduce execution time
+. Reduce memory usage
+
+-Techniques
+1. Constant Folding
+2. Constant Propogation
+
+6.1 Constant Folding
+It evaluates the expression containing constant values in operands.
+For ex:
+declare age : int = 20 + 0 + 9 + 8 + 7;
+
+Output:
+. IR Output(Before Optimization)
+t1 = 20 + 0
+t2 = t1 + 9
+t3 = t2 + 8
+t4 = t3 + 7
+age = t4
+
+. After optimization
+t1 = 20
+t2 = 29
+t3 = 37
+t4 = 44
+age = 44
+
+6.2 Constant Propogation
+Replaces variable or temporary variables with constant values.
+
